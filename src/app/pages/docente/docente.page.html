@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>docente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="1">Editar</ion-col>
+      <ion-col size="2.5">Foto</ion-col>
+      <ion-col size="2.5">Nombre</ion-col>
+      <ion-col size="2.5">Apellido</ion-col>
+      <ion-col size="2.5">Estado</ion-col>
+      <ion-col size="1"></ion-col>
+    </ion-row>
+    <ion-row *ngFor="let d of docentes">
+      <ion-col size="1" ><ion-icon name="create-outline" color="primary" (click)="update()"></ion-icon></ion-col>
+      <ion-col size="2.5">
+        <ion-avatar *ngIf="d.foto && d.foto[0]?.url" class="avatar-pequeno">
+          <img [src]="'http://localhost:1337' + d.foto[0].url" alt="Foto de perfil">
+        </ion-avatar>
+
+        <ion-text *ngIf="!d.foto || !d.foto[0]?.url">
+          <p>No foto</p>
+        </ion-text>
+      </ion-col>
+      <ion-col size="2.5">{{d.nombre | titlecase}}</ion-col>
+      <ion-col size="2.5">{{d.apellido | titlecase}}</ion-col>
+      <ion-col size="2.5">{{ d.estatus ? 'Activo' : 'Inactivo' }}</ion-col>
+      <ion-col size="1"><ion-icon name="trash-outline" color="danger" (click)="borrar(d.id)"></ion-icon></ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

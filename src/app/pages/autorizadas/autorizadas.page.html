@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Autorizadas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="1">Editar</ion-col>
+      <ion-col size="1.6">Foto</ion-col>
+      <ion-col size="1.6">Nombre</ion-col>
+      <ion-col size="1.6">Apellido</ion-col>
+      <ion-col size="1.6">Telefono</ion-col>
+      <ion-col size="1.6">Dirección</ion-col>
+      <ion-col size="1.6">Estado</ion-col>
+      <ion-col size="1"></ion-col>
+    </ion-row>
+    <ion-row *ngFor="let a of autorizadas">
+      <ion-col size="1" ><ion-icon name="create-outline" color="primary" (click)="update()"></ion-icon></ion-col>
+      <ion-col size="1.6">
+        <ion-avatar class="avatar-pequeno">
+          <img [src]="'http://localhost:1337' + a.foto.url" alt="Foto de perfil">
+        </ion-avatar>
+      </ion-col>
+      <ion-col size="1.6">{{a.nombre | titlecase}}</ion-col>
+      <ion-col size="1.6">{{a.apellidos | titlecase}}</ion-col>
+      <ion-col size="1.6">{{a.telefono}}</ion-col>
+      <ion-col size="1.6">{{a.Domicilio}}</ion-col>
+      <ion-col size="1.6">{{ a.estatus ? 'Activo' : 'Inactivo' }}</ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
