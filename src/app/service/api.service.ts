@@ -30,16 +30,47 @@ export class ApiService {
 
     return this.http.get(this.url + '/alumnos?populate=foto', { headers: options });
   }
+  // Create productos
   postAlum(data: any, token: string) {
-    console.log(data)
+    let options = new HttpHeaders({ 
+      'Authorization': 'Bearer ' + token 
+    });
+    return this.http.post(this.url + '/alumnos', { data: data }, { headers: options });
+  }
+
+  // subir imagen si el alumno creado tiene
+  uploadFile(token: string, file: File) {
+    const formData = new FormData();
+    formData.append('files', file);
+    let options = new HttpHeaders({ 'Authorization': 'Bearer ' + token });
+    return this.http.post(this.url + '/upload/', formData, { headers: options });
+  }
+
+  // subir imagen al alumno
+  imagenAlum(token: string, alumnoId: string, fileId: number) {
+    let options = new HttpHeaders({ 'Authorization': 'Bearer ' + token });
+    const body = { foto: fileId };
+    return this.http.put(this.url + `/alumnos/${alumnoId}`, { data: body }, { headers: options });
+  }
+
+  // Update datos alumno
+  updateAlum(a: any, d: any, token: string) {
+    let options = new HttpHeaders({ 
+      'Authorization': 'Bearer ' + token 
+    });
+    return this.http.put(this.url + '/alumnos/' + a.documentId, { data: { nombre: d.nombre, apellido: d.apellido, persona_autorizada: a.autorizadas } }, { headers: options })
+  }
+
+  // Delete alumnos
+  delAlumno(a: any, datosActualizados: any, token: string) {
     let options = new HttpHeaders({
       'Authorization': 'Bearer ' + token
     });
 
-    return this.http.post(this.url + '/alumnos', { data: data }, { headers: options });
-  }
+    return this.http.put(this.url + '/alumnos/' + a.documentId, { data: { Estatus: datosActualizados } }, { headers: options });
 
-  // Crud de docentes
+  }
+  // CRUD de docentes
   getDoce(token: string) {
     console.log(token)
     let options = new HttpHeaders({
@@ -49,18 +80,10 @@ export class ApiService {
     return this.http.get(this.url + '/docentes?populate=foto', { headers: options });
   }
 
-  delAlumno(a: any, datosActualizados: any, token: string) {
-
-    let options = new HttpHeaders({
-      'Authorization': 'Bearer ' + token
-    });
-
-    return this.http.put(this.url+'/alumnos/'+ a.documentId, { data: { Estatus: datosActualizados } }, { headers: options });
-
-  }
+  
 
 
-  // crud de personas autorizadas
+  // CRUD de personas autorizadas
   getAut(token: string) {
     console.log(token)
     let options = new HttpHeaders({
@@ -70,7 +93,7 @@ export class ApiService {
     return this.http.get(this.url + '/persona-autorizadas?populate=foto', { headers: options });
   }
 
-  // crud de salones
+  // CRUD de salones
   getSalon(token: string) {
     console.log(token)
     let options = new HttpHeaders({

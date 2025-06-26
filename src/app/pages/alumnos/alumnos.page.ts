@@ -65,71 +65,71 @@ export class AlumnosPage implements OnInit {
     this.nuevoAlumno.foto = archivo;
   }
 
- borrar(a: any) {
-  const datosActualizados = false;
+  borrar(a: any) {
+    const datosActualizados = false;
 
 
-  this.api.delAlumno(a, datosActualizados, this.token).subscribe({
-    next: (res) => {
-      console.log('Alumno desactivado:', res);
-      this.getAlumnos(); // Actualiza la lista después del cambio
-    },
-    error: (error) => {
-      console.error('Error al desactivar:', error);
-    }
-  });
-}
+    this.api.delAlumno(a, datosActualizados, this.token).subscribe({
+      next: (res) => {
+        console.log('Alumno desactivado:', res);
+        this.getAlumnos(); // Actualiza la lista después del cambio
+      },
+      error: (error) => {
+        console.error('Error al desactivar:', error);
+      }
+    });
+  }
 
 
   update() {
-
+    
   }
 
-  addAlum() {
-    console.log( this.nuevoAlumno.apellido, this.nuevoAlumno.nombre, this.nuevoAlumno.Estatus, this.nuevoAlumno.autorizadas )
-    const formData = new FormData();
-    const data ={
-      nombre: this.nuevoAlumno.nombre,
-      apellido: this.nuevoAlumno.apellido,
-      Estatus: this.nuevoAlumno.Estatus,
-      autorizadas: this.nuevoAlumno.autorizadas
-    };
+  async addAlum() {
+    try {
+      const data = {
+        nombre: this.nuevoAlumno.nombre,
+        apellido: this.nuevoAlumno.apellido,
+        Estatus: this.nuevoAlumno.Estatus,
+        persona_autorizadas: this.nuevoAlumno.autorizadas
+      };
 
-    if (this.nuevoAlumno.foto) {
-      formData.append('files.foto', this.nuevoAlumno.foto);
-    }
+      const createRes: any = await this.api.postAlum(data, this.token).toPromise();
+      const alumnoId = createRes.data.documentId;
 
-    this.api.postAlum(data, this.token).subscribe({
-      next: (res: any) => {
-        this.mostrarFormulario = false;
-        this.limpiarFormulario();
-        this.getAlumnos();
-      },
-      error: (error: any) => {
-        console.log('Error al guardar alumno:', error);
-      },
-    })
+      if (this.nuevoAlumno.foto) {
+        const uploadRes: any = await this.api.uploadFile(this.token, this.nuevoAlumno.foto).toPromise();
+        await this.api.imagenAlum(this.token, alumnoId, uploadRes[0].id).toPromise();
+      }
+
+      this.mostrarFormulario = false;
+      this.limpiarFormulario();
+      this.getAlumnos();
+
+    } catch (error) {
+      console.error(error);
     }
+  }
 
   limpiarFormulario() {
-      this.nuevoAlumno = {
-        nombre: '',
-        apellido: '',
-        Estatus: true,
-        foto: null,
-        autorizadas: []
-      };
-    }
-
-  mostrarFormulario = false;
-
-    nuevoAlumno = {
+    this.nuevoAlumno = {
       nombre: '',
       apellido: '',
       Estatus: true,
       foto: null,
       autorizadas: []
     };
-
-
   }
+
+  mostrarFormulario = false;
+
+  nuevoAlumno = {
+    nombre: '',
+    apellido: '',
+    Estatus: true,
+    foto: null,
+    autorizadas: []
+  };
+
+
+}
