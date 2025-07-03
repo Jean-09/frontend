@@ -16,6 +16,9 @@ import { ViewChild } from '@angular/core';
 export class AlumnosPage implements OnInit {
   @ViewChild('modal', { static: false }) modal!: IonModal;
 
+  isEditing = false;
+  alumnoEditId: string | null = null;
+
   constructor(private alertController: AlertController, private api: ApiService, private storage: Storage, private route: Router) { }
 
   async ngOnInit() {
@@ -23,76 +26,121 @@ export class AlumnosPage implements OnInit {
     await this.getToken();
     await this.getAlumnos();
     await this.getAutorizadas();
+    await this.getdocentes();
 
   }
 
-  token = '';
+   openAddModal() {
+    this.isEditing = false;
+    this.alumnoEditId = null;
+    this.limpiarFormulario();
+    this.previewImage = null;
+    this.modal.present();
+  }
+
+  openEditModal(alumno: any) {
+    console.log(alumno)
+    this.isEditing = true;
+    this.alumnoEditId = alumno.documentId;       
+    this.nuevoAlumno = {
+      nombre: alumno.nombre,
+      apellido: alumno.apellido,
+      Estatus: alumno.Estatus,
+      foto: null,                                
+      autorizadas: alumno.persona_autorizadas?.map((p: any) => p.documentId) || [],
+      docente: alumno.docente?.documentId ? [alumno.docente.documentId] as any[] : [] as any[]
+    };
+
+    if (alumno.foto && alumno.foto[0]?.url) {
+      this.previewImage = 'http://localhost:1337' + alumno.foto[0].url;
+    } else {
+      this.previewImage = null;
+    }
+
+    this.modal.present();
+  }
 
   async getToken() {
     this.token = await this.storage.get('token');
 
   }
 
+  token = '';
   alumnos: any[] = [];
   paginaActual = 1;
   porPagina = 20;
   cargando = false;
   infiniteScrollEvent: any = null;
   autorizadas: any[] = [];
+  previewImage: string | ArrayBuffer | null = null;
 
-  getAlumnos(event?: any) {
-    if (this.cargando) {
-      if (event) event.target.complete();
-      return;
+  getAlumnos(event?: any, reset: boolean = false) {
+  if (this.cargando) {
+    if (event) event.target.complete();
+    return;
+  }
+
+  if (reset) {
+    this.paginaActual = 1;
+    this.alumnos = [];
+  }
+
+  this.cargando = true;
+
+  this.api.getAlum(this.token, this.paginaActual, this.porPagina).then((res) => {
+    if (event) this.infiniteScrollEvent = event;
+
+    this.alumnos = [...this.alumnos, ...res];
+
+    this.alumnos.sort((a, b) => {
+      if (a.Estatus === b.Estatus) return 0;
+      if (a.Estatus === true) return -1;
+      return 1;
+    });
+
+    if (event) {
+      event.target.complete();
+      if (res.length < this.porPagina) {
+        event.target.disabled = true;
+      }
     }
 
-    this.cargando = true;
-    console.log('token', this.token);
+    this.paginaActual++;
+    this.cargando = false;
 
-    this.api.getAlum(this.token, this.paginaActual, this.porPagina).then((res) => {
-      if (event) this.infiniteScrollEvent = event;
+  }).catch((error) => {
+    console.log(error);
+    if (event) event.target.complete();
+    this.cargando = false;
+  });
+}
 
-      this.alumnos = [...this.alumnos, ...res];
-
-      this.alumnos.sort((a, b) => {
-        if (a.Estatus === b.Estatus) return 0;
-        if (a.Estatus === true) return -1;
-        return 1;
-      });
-
-      if (event) {
-        event.target.complete();
-        if (res.length < this.porPagina) {
-          event.target.disabled = true;
-        }
-      }
-
-      this.paginaActual++;
-      this.cargando = false;
-
-      console.log(this.alumnos);
-    }).catch((error) => {
-      console.log(error);
-      if (event) event.target.complete();
-      this.cargando = false;
-    });
-  }
 
   getAutorizadas() {
     this.api.getAut(this.token).then((res) => {
-      this.autorizadas = res.data;
+      this.autorizadas = res;
       console.log(this.autorizadas);
     }).catch((error) => {
       console.log(error);
     })
   }
+  docente: any[]= [];
 
-  previewImage: string | ArrayBuffer | null = null;
+  getdocentes() {
+    this.api.getDoce(this.token).then((res) => {
+      this.docente = res;
+      console.log(this.docente);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
+
 
   seleccionarFoto(event: any) {
     const archivo = event.target.files[0];
     this.nuevoAlumno.foto = archivo;
-    
+
     const reader = new FileReader();
     reader.onload = () => {
       this.previewImage = reader.result;
@@ -105,10 +153,11 @@ export class AlumnosPage implements OnInit {
   }
 
   toggleStatus(a: any) {
-    const nuevoEstado = !a.Estatus; 
+    const nuevoEstado = !a.Estatus;
 
     this.api.delAlumno(a, nuevoEstado, this.token).then((res) => {
       console.log('Estado cambiado:', res);
+      a.Estatus = nuevoEstado;
       this.getAlumnos();
     }).catch((error) => {
       console.error('Error al cambiar estado:', error);
@@ -117,8 +166,35 @@ export class AlumnosPage implements OnInit {
 
 
 
-  update() {
 
+  async updateAlum() {
+    if (!this.alumnoEditId) return;
+
+    try {
+      const data = {
+        nombre: this.nuevoAlumno.nombre,
+        apellido: this.nuevoAlumno.apellido,
+        Estatus: this.nuevoAlumno.Estatus,
+        persona_autorizadas: this.nuevoAlumno.autorizadas,
+        docente: this.nuevoAlumno.docente
+      };
+
+
+      await this.api.putAlum(this.alumnoEditId, data, this.token);
+
+      if (this.nuevoAlumno.foto) {
+        const uploadRes = await this.api.uploadFile(this.token, this.nuevoAlumno.foto);
+        const fileId = uploadRes.data[0].id;
+        await this.api.imagenAlum(this.token, this.alumnoEditId, fileId);
+      }
+
+      this.modal.dismiss();
+      this.limpiarFormulario();
+      this.getAlumnos(undefined, true);
+    } catch (error) {
+      console.error(error);
+      this.presentAlert('Ocurrió un error al actualizar el alumno.');
+    }
   }
 
   async addAlum(nuevoAlumnoParam?: any) {
@@ -134,7 +210,8 @@ export class AlumnosPage implements OnInit {
         nombre: alumno.nombre,
         apellido: alumno.apellido,
         Estatus: alumno.Estatus,
-        persona_autorizadas: alumno.autorizadas
+        persona_autorizadas: alumno.autorizadas,
+        docente: alumno.docente
       };
 
       const createRes = await this.api.postAlum(data, this.token);
@@ -188,19 +265,22 @@ export class AlumnosPage implements OnInit {
       apellido: '',
       Estatus: true,
       foto: null,
-      autorizadas: []
+      autorizadas: [],
+      docente: []
     };
   }
 
   mostrarFormulario = false;
 
-  nuevoAlumno = {
-    nombre: '',
-    apellido: '',
-    Estatus: true,
-    foto: null,
-    autorizadas: []
-  };
+  nuevoAlumno: any = {
+  nombre: '',
+  apellido: '',
+  Estatus: true,
+  foto: null,
+  autorizadas: [],
+  docente: []
+};
+
 
   async presentAlert(message: string) {
     const alert = await this.alertController.create({
@@ -211,6 +291,13 @@ export class AlumnosPage implements OnInit {
     await alert.present();
   }
 
-
+  verDetallesAlum(alumno: any) {
+    console.log('Alumno', alumno)
+    this.route.navigate(['/detalles-alumnos'], {
+      state: {
+        alumno: alumno
+      }
+    })
+  }
 
 }

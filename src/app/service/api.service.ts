@@ -30,7 +30,7 @@ export class ApiService {
     });
 
     const start = (pagina - 1) * porPagina;
-    const url = `${this.url}/alumnos?populate=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+    const url = `${this.url}/alumnos?populate=*&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
   }
@@ -56,17 +56,19 @@ export class ApiService {
   imagenAlum(token: string, alumnoId: string, fileId: number) {
     console.log('Id del alumno a ligar', alumnoId);
     let options = new AxiosHeaders({ 'Authorization': 'Bearer ' + token });
-    const body = { foto: [fileId] };  // <-- IMPORTANTE: array
+    const body = { foto: [fileId] };
     return axios.put(this.url + `/alumnos/${alumnoId}`, { data: body }, { headers: options });
   }
 
 
   // Update datos alumno
-  updateAlum(a: any, d: any, token: string) {
-    let options = new AxiosHeaders({
+  async putAlum(id: string, data: any, token: string) {
+    console.log('Actualizando alumno:', id, data);
+    const options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
     });
-    return axios.put(this.url + '/alumnos/' + a.documentId, { data: { nombre: d.nombre, apellido: d.apellido, persona_autorizada: a.autorizadas } }, { headers: options })
+
+    return axios.put(`${this.url}/alumnos/${id}`, { data: data }, { headers: options });
   }
 
   // Delete alumnos
@@ -86,7 +88,17 @@ export class ApiService {
     });
 
     const res = await axios.get(this.url + '/docentes?populate=foto', { headers: options });
-    return res.data;
+    return res.data.data;
+
+  }
+
+  // Delete Docentes
+  delDocente(d: any, datosActualizados: any, token: string) {
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    return axios.put(this.url + '/docentes/' + d.documentId, { data: { estatus: datosActualizados } }, { headers: options });
 
   }
 
@@ -101,7 +113,16 @@ export class ApiService {
     });
 
     const res = await axios.get(this.url + '/persona-autorizadas?populate=foto', { headers: options });
-    return res.data
+    return res.data.data
+  }
+
+  delAut(p: any, datosActualizados: any, token: string) {
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    return axios.put(this.url + '/persona-autorizadas/' + p.documentId, { data: { estatus: datosActualizados } }, { headers: options });
+
   }
 
   // CRUD de salones
@@ -112,6 +133,15 @@ export class ApiService {
     });
 
     const res = await axios.get(this.url + '/salons?populate=docente', { headers: options });
-    return res.data
+    return res.data.data
+  }
+
+  delsalon(s: any, datosActualizados: any, token: string) {
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    return axios.put(this.url + '/salons/' + s.documentId, { data: { estado: datosActualizados } }, { headers: options });
+
   }
 }

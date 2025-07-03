@@ -49,6 +49,18 @@ export class AutorizadasPage implements OnInit {
   update(){
 
   }
+
+       toggleStatus(a: any) {
+    const nuevoEstado = !a.estatus;
+
+    this.api.delAut(a, nuevoEstado, this.token).then((res) => {
+      console.log('Estado cambiado:', res);
+      a.estatus = nuevoEstado;
+      this.getAutorizadas();
+    }).catch((error) => {
+      console.error('Error al cambiar estado:', error);
+    });
+  }
 }
 
 

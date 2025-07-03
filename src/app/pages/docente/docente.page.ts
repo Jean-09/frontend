@@ -49,5 +49,18 @@ export class DocentePage implements OnInit {
   update(){
 
   }
+
+    toggleStatus(d: any) {
+    const nuevoEstado = !d.estatus;
+
+    this.api.delDocente(d, nuevoEstado, this.token).then((res) => {
+      console.log('Estado cambiado:', res);
+      d.estatus = nuevoEstado;
+      this.getDocentes();
+    }).catch((error) => {
+      console.error('Error al cambiar estado:', error);
+    });
+  }
+
 }
 

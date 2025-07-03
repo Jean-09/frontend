@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>salon</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -21,7 +24,16 @@
       <ion-col size="3">{{s.docente.nombre | titlecase}}</ion-col>
       <ion-col size="3">{{ s.estado ? 'En uso' : 'Sin uso' }}</ion-col>
       
-      <ion-col size="1.5"><ion-icon name="trash-outline" color="danger" (click)="borrar(s.id)"></ion-icon></ion-col>
+      <ion-col size="1">
+          <ion-col size="1">
+            <ion-icon *ngIf="s.estado === true" name="trash-outline" color="danger" (click)="toggleStatus(s)">
+            </ion-icon>
+
+            <ion-icon *ngIf="s.estado === false" name="power" color="success" (click)="toggleStatus(s)">
+            </ion-icon>
+          </ion-col>
+
+        </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>

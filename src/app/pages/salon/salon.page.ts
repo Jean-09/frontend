@@ -49,4 +49,15 @@ export class SalonPage implements OnInit {
   update() {
 
   }
+     toggleStatus(s: any) {
+    const nuevoEstado = !s.estado;
+
+    this.api.delsalon(s, nuevoEstado, this.token).then((res) => {
+      console.log('Estado cambiado:', res);
+      s.estado = nuevoEstado;
+      this.getSalon();
+    }).catch((error) => {
+      console.error('Error al cambiar estado:', error);
+    });
+  }
 }

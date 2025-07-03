@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>docente</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -29,7 +32,16 @@
       <ion-col size="2.5">{{d.nombre | titlecase}}</ion-col>
       <ion-col size="2.5">{{d.apellido | titlecase}}</ion-col>
       <ion-col size="2.5">{{ d.estatus ? 'Activo' : 'Inactivo' }}</ion-col>
-      <ion-col size="1"><ion-icon name="trash-outline" color="danger" (click)="borrar(d.id)"></ion-icon></ion-col>
+      <ion-col size="1">
+          <ion-col size="1">
+            <ion-icon *ngIf="d.estatus === true" name="trash-outline" color="danger" (click)="toggleStatus(d)">
+            </ion-icon>
+
+            <ion-icon *ngIf="d.estatus === false" name="power" color="success" (click)="toggleStatus(d)">
+            </ion-icon>
+          </ion-col>
+
+        </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>

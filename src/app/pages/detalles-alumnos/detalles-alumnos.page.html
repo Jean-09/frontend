@@ -1,0 +1,59 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>detallesAlumnos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding soft-bg">
+
+  <section class="alumno-section">
+    <div class="foto-alumno">
+      <div class="photo-placeholder grande"><img [src]="'http://localhost:1337' + alumno.foto[0].url" alt="Foto de perfil"></div>
+      
+    </div>
+
+
+    <ion-card class="alumno-card">
+      <ion-card-header>
+        <ion-card-title>{{ alumno.nombre }} {{ alumno.apellido }}</ion-card-title>
+        <ion-chip [color]="alumno.Estatus ? 'success' : 'danger'">
+          {{ alumno.Estatus ? 'Activo' : 'Inactivo' }}
+        </ion-chip>
+      </ion-card-header>
+
+    </ion-card>
+  </section>
+<section class="inferior-section">
+
+  <div class="autorizadas-wrapper">
+    <h3>Personas Autorizadas</h3>
+    <div class="autorizadas-grid">
+      <ion-card *ngFor="let p of alumno.persona_autorizadas" class="info-card">
+        <ion-card-header>
+          <div class="photo-placeholder pequeño">Foto</div>
+          <ion-card-title>{{ p.nombre }} {{ p.apellidos }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Tel: {{ p.telefono }}</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- DOCENTE -->
+  <div class="docente-wrapper">
+    <h3>Docente</h3>
+    <ion-card *ngIf="alumno.docente" class="info-card">
+      <ion-card-header class="docente-header">
+        <div class="photo-placeholder pequeño">Foto</div>
+        <ion-card-title>{{ alumno.docente.nombre }} {{ alumno.docente.apellido }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p *ngIf="alumno.docente.telefono">Tel: {{ alumno.docente.telefono }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+</section>
+
+</ion-content>

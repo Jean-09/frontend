@@ -1,20 +1,48 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Panel de administración</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="ion-padding custom-content">
 
-<ion-content [fullscreen]="true">
-  <ion-button (click)="estu()" expand="block" fill="clear" shape="round">
-    Gestión de estudiantes
-  </ion-button>
-  <ion-button (click)="doce()" expand="block" fill="clear" shape="round">
-    Gestión de docentes
-  </ion-button>
-  <ion-button (click)="persoAut()" expand="block" fill="clear" shape="round">
-    Gestión de personas autorizadas
-  </ion-button>
-  <ion-button (click)="salon()" expand="block" fill="clear" shape="round">
-    Gestión de salón
-  </ion-button>
+  <div class="main-card">
+    <div class="header">
+      <div class="profile">
+        <ion-icon name=""></ion-icon>
+        <span>Administrator</span>
+      </div>
+      <div class="menu">
+        <span></span>
+        <span></span>
+        <span></span>
+        <button ></button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="text-zone">
+        <h1>Administrator</h1>
+        <p></p>
+        <button name="pie"></button>
+      </div>
+      <div class="icon-zone">
+        <ion-icon name="logo-tux"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-icons" >
+    <div class="icon-item" (click)="estu()">
+      <ion-icon name="create-outline"></ion-icon>
+      <p><strong >Gestión Alumnos</strong><br><span></span></p>
+    </div>
+    <div class="icon-item" (click)="doce()">
+      <ion-icon name="mail-outline"></ion-icon>
+      <p><strong >Gestión Docentes</strong><br><span></span></p>
+    </div>
+    <div class="icon-item" (click)="persoAut()">
+      <ion-icon name="mail-open-outline"></ion-icon>
+      <p><strong >Gestión personas autorizadas</strong><br><span></span></p>
+    </div>
+    <div class="icon-item" (click)="salon()">
+      <ion-icon name="leaf-outline"></ion-icon>
+      <p><strong >Gestión salones</strong><br><span></span></p>
+    </div>
+  </div>
+
 </ion-content>

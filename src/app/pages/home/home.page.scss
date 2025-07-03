@@ -1,0 +1,101 @@
+.custom-content {
+  --background: linear-gradient(135deg, #f8f8f8, #e8e8e8);
+  color: #000000; /* Texto negro puro */
+}
+
+.main-card {
+  border-radius: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #ffffff, #f0f0f0); /* Blanco a gris claro */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  color: #000000; /* Texto negro */
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.setars {
+  border: 1px solid #000000; /* Borde negro */
+  background: transparent;
+  color: #000000; /* Texto negro */
+  border-radius: 20px;
+  padding: 5px 15px;
+}
+
+.content {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-zone h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #000000; /* Texto negro */
+}
+
+.text-zone p {
+  margin-bottom: 20px;
+  color: #333333; /* Texto gris oscuro */
+}
+
+.btn-outline {
+  border: 1px solid #000000; /* Borde negro */
+  background: transparent;
+  color: #000000; /* Texto negro */
+  border-radius: 20px;
+  padding: 10px 20px;
+}
+
+.icon-zone ion-icon {
+  font-size: 80px;
+  background: radial-gradient(circle, #ffffff, #e0e0e0); /* Degradado blanco a gris */
+  border-radius: 50%;
+  padding: 30px;
+  color: #000000; /* Icono negro */
+}
+
+.bottom-icons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #ffffff; /* Fondo blanco puro */
+  border-radius: 30px;
+  padding: 20px 0;
+  margin-top: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+}
+
+.icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #000000; /* Texto negro */
+}
+
+.icon-item ion-icon {
+  background: linear-gradient(135deg, #ffffff, #e8e8e8); /* Degradado blanco a gris */
+  color: #000000; /* Icono negro */
+  padding: 20px;
+  border-radius: 50%;
+  font-size: 30px;
+  margin-bottom: 10px;
+  border: 1px solid #e0e0e0; /* Borde sutil */
+}

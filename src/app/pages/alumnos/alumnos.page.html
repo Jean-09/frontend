@@ -1,20 +1,24 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>alumnos</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
 
-  <!-- Formulario para agregar alumno -->
-  <ion-button id="open-modal">Agregar alumno <ion-icon slot="start" name="add"></ion-icon></ion-button>
+  <ion-button (click)="openAddModal()">
+    Agregar alumno <ion-icon slot="start" name="add"></ion-icon>
+  </ion-button>
 
-  <ion-modal #modal trigger="open-modal">
+  <ion-modal #modal>
     <ng-template>
       <ion-content>
         <ion-toolbar>
           <ion-card-header>
-            <ion-card-title>Nuevo Alumno</ion-card-title>
+            <ion-card-title>{{ isEditing ? 'Editar Alumno' : 'Nuevo Alumno' }}</ion-card-title>
             <ion-button color="light" (click)="modal.dismiss()" color="danger">cancelar</ion-button>
           </ion-card-header>
 
@@ -51,15 +55,25 @@
             <ion-item>
               <ion-label>Personas Autorizadas</ion-label>
               <ion-select [(ngModel)]="nuevoAlumno.autorizadas" multiple interface="popover">
-                <ion-select-option *ngFor="let p of autorizadas" [value]="p.id">{{ p.nombre }}</ion-select-option>
+                <ion-select-option *ngFor="let p of autorizadas" [value]="p.documentId">{{ p.nombre
+                  }}</ion-select-option>
               </ion-select>
             </ion-item>
-            <ion-button expand="block" color="success" (click)="addAlum()">Guardar</ion-button>
+            <ion-item>
+              <ion-label>Docente</ion-label>
+              <ion-select [(ngModel)]="nuevoAlumno.docente" multiple interface="popover">
+                <ion-select-option *ngFor="let d of docente" [value]="d.documentId">{{ d.nombre }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-button expand="block" color="success" (click)="isEditing ? updateAlum() : addAlum()">
+              {{ isEditing ? 'Actualizar' : 'Guardar' }}
+            </ion-button>
           </ion-card-content>
         </ion-toolbar>
       </ion-content>
     </ng-template>
   </ion-modal>
+
   <ion-card *ngIf="mostrarFormulario">
 
   </ion-card>
@@ -73,39 +87,40 @@
       <ion-col size="1"></ion-col>
     </ion-row>
     <ion-row *ngFor="let a of alumnos">
-      <ion-col size="1"><ion-icon name="create-outline" color="primary" (click)="update()"></ion-icon></ion-col>
-      <ion-col size="2.5">
-        <ion-avatar *ngIf="a.foto && a.foto[0]?.url" class="avatar-pequeno">
-          <img [src]="'http://localhost:1337' + a.foto[0].url" alt="Foto de perfil">
-        </ion-avatar>
-
-        <ion-text *ngIf="!a.foto || !a.foto[0]?.url">
-          <p>No foto</p>
-        </ion-text>
-      </ion-col>
-      <ion-col size="2.5">{{a.nombre | titlecase}}</ion-col>
-      <ion-col size="2.5">{{a.apellido | titlecase}}</ion-col>
-      <ion-col size="2.5">
-        {{ a.Estatus ? 'Activo' : 'Inactivo' }}
-      </ion-col>
-      <ion-col size="1">
-        <ion-col size="1">
-          <ion-icon *ngIf="a.Estatus === true" name="trash-outline" color="danger" (click)="toggleStatus(a)">
-          </ion-icon>
-
-          <ion-icon *ngIf="a.Estatus === false" name="power" color="success" (click)="toggleStatus(a)">
+      <ion-col size="1" id="open-modal">
+          <ion-icon name="create-outline" color="primary" (click)="openEditModal(a)">
           </ion-icon>
         </ion-col>
+        <ion-col size="2.5" (click)="verDetallesAlum(a)">
+          <ion-avatar *ngIf="a.foto && a.foto[0]?.url" class="avatar-pequeno">
+            <img [src]="'http://localhost:1337' + a.foto[0].url" alt="Foto de perfil">
+          </ion-avatar>
 
-      </ion-col>
+          <ion-text *ngIf="!a.foto || !a.foto[0]?.url" (click)="verDetallesAlum(a)">
+            <p>No foto</p>
+          </ion-text>
+        </ion-col>
+        <ion-col size="2.5" (click)="verDetallesAlum(a)">{{a.nombre | titlecase}}</ion-col>
+        <ion-col size="2.5" (click)="verDetallesAlum(a)">{{a.apellido | titlecase}}</ion-col>
+        <ion-col size="2.5" (click)="verDetallesAlum(a)">
+          {{ a.Estatus ? 'Activo' : 'Inactivo' }}
+        </ion-col>
+        <ion-col size="1">
+          <ion-col size="1">
+            <ion-icon *ngIf="a.Estatus === true" name="trash-outline" color="danger" (click)="toggleStatus(a)">
+            </ion-icon>
+
+            <ion-icon *ngIf="a.Estatus === false" name="power" color="success" (click)="toggleStatus(a)">
+            </ion-icon>
+          </ion-col>
+
+        </ion-col>
 
     </ion-row>
   </ion-grid>
-<ion-infinite-scroll threshold="100px" (ionInfinite)="getAlumnos($event)">
-  <ion-infinite-scroll-content
-    loadingSpinner="bubbles"
-    loadingText="Cargando más alumnos...">
-  </ion-infinite-scroll-content>
-</ion-infinite-scroll>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="getAlumnos($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más alumnos...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 
 </ion-content>
