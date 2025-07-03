@@ -4,6 +4,7 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
+      <button slot="end" class="setars" (click)="logout()"> Cerrar sesión</button>
   </ion-toolbar>
 </ion-header>
 
@@ -22,27 +23,31 @@
       <ion-col size="1"></ion-col>
     </ion-row>
     <ion-row *ngFor="let a of autorizadas">
-      <ion-col size="1" ><ion-icon name="create-outline" color="primary" (click)="update()"></ion-icon></ion-col>
+      <ion-col size="1"><ion-icon name="create-outline" color="primary" (click)="update()"></ion-icon></ion-col>
       <ion-col size="1.6">
-        <ion-avatar class="avatar-pequeno">
-          <img [src]="'http://localhost:1337' + a.foto.url" alt="Foto de perfil">
-        </ion-avatar>
+        <ion-avatar *ngIf="a.foto && a.foto[0]?.url" class="avatar-pequeno">
+            <img [src]="'http://localhost:1337' + a.foto[0].url" alt="Foto de perfil">
+          </ion-avatar>
+
+          <ion-text *ngIf="!a.foto || !a.foto[0]?.url">
+            <p>No foto</p>
+          </ion-text>
       </ion-col>
       <ion-col size="1.6">{{a.nombre | titlecase}}</ion-col>
       <ion-col size="1.6">{{a.apellidos | titlecase}}</ion-col>
       <ion-col size="1.6">{{a.telefono}}</ion-col>
       <ion-col size="1.6">{{a.Domicilio}}</ion-col>
-      <ion-col size="1.6">{{ a.estatus ? 'Activo' : 'Inactivo' }}</ion-col>
-       <ion-col size="1">
-          <ion-col size="1">
-            <ion-icon *ngIf="a.estatus === true" name="trash-outline" color="danger" (click)="toggleStatus(a)">
-            </ion-icon>
+      <ion-col size="1.6">{{a.estatus ? 'Activo' : 'Inactivo' }}</ion-col>
+      <ion-col size="1">
+        <ion-col size="1">
+          <ion-icon *ngIf="a.estatus === true" name="trash-outline" color="danger" (click)="toggleStatus(a)">
+          </ion-icon>
 
-            <ion-icon *ngIf="a.estatus === false" name="power" color="success" (click)="toggleStatus(a)">
-            </ion-icon>
-          </ion-col>
-
+          <ion-icon *ngIf="a.estatus === false" name="power" color="success" (click)="toggleStatus(a)">
+          </ion-icon>
         </ion-col>
+
+      </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>

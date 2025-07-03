@@ -302,4 +302,9 @@ export class AlumnosPage implements OnInit {
     })
   }
 
+    async logout() {
+    await this.storage.remove('token');
+    this.route.navigate(['/login']);
+  }
+
 }

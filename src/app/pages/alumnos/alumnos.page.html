@@ -13,62 +13,74 @@
     Agregar alumno <ion-icon slot="start" name="add"></ion-icon>
   </ion-button>
 
-  <ion-modal #modal>
+<ion-modal #modal class="custom-modal">
     <ng-template>
-      <ion-content>
-        <ion-toolbar>
-          <ion-card-header>
-            <ion-card-title>{{ isEditing ? 'Editar Alumno' : 'Nuevo Alumno' }}</ion-card-title>
-            <ion-button color="light" (click)="modal.dismiss()" color="danger">cancelar</ion-button>
-          </ion-card-header>
+      <ion-content class="modal-content">
+        <ion-toolbar class="modal-toolbar">
+          <ion-card class="modal-card">
+            <ion-card-header class="modal-header">
+              <ion-card-title class="modal-title">{{ isEditing ? 'Editar Alumno' : 'Nuevo Alumno' }}</ion-card-title>
+              <ion-button class="modal-close-btn" fill="clear" (click)="modal.dismiss()">
+                <ion-icon name="close" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-card-header>
 
-          <ion-card-content>
-            <ion-item>
-              <ion-label position="floating">Nombre</ion-label>
-              <ion-input [(ngModel)]="nuevoAlumno.nombre"></ion-input>
-            </ion-item>
+            <ion-card-content class="modal-body">
+              <div class="row">
+                <ion-item class="form-item half-width">
+                  <ion-label position="floating" class="form-label">Nombre</ion-label>
+                  <ion-input class="form-input" [(ngModel)]="nuevoAlumno.nombre"></ion-input>
+                </ion-item>
 
-            <ion-item>
-              <ion-label position="floating">Apellido</ion-label>
-              <ion-input [(ngModel)]="nuevoAlumno.apellido"></ion-input>
-            </ion-item>
+                <ion-item class="form-item half-width">
+                  <ion-label position="floating" class="form-label">Apellido</ion-label>
+                  <ion-input class="form-input" [(ngModel)]="nuevoAlumno.apellido"></ion-input>
+                </ion-item>
+              </div>
 
-            <ion-item>
-              <ion-label>Estado</ion-label>
-              <ion-select [(ngModel)]="nuevoAlumno.Estatus">
-                <ion-select-option [value]="true">Activo</ion-select-option>
-                <ion-select-option [value]="false">Inactivo</ion-select-option>
-              </ion-select>
-            </ion-item>
+              <div class="row photo-section">
+                <div class="photo-upload-container">
+                  <input type="file" id="fileInput" (change)="seleccionarFoto($event)" accept="image/*" style="display: none;">
+                  <label for="fileInput" class="photo-upload-label">
+                    <ion-icon name="camera" class="photo-icon"></ion-icon>
+                    <span>Subir Foto</span>
+                  </label>
+                </div>
 
-            <ion-item>
-              <ion-label>Foto</ion-label>
-              <input type="file" (change)="seleccionarFoto($event)" />
-            </ion-item>
+                <div class="photo-preview" *ngIf="previewImage">
+                  <img [src]="previewImage" alt="Previsualización" class="preview-image" />
+                </div>
+              </div>
 
-            <ion-item *ngIf="previewImage">
-              <img [src]="previewImage" alt="Previsualización"
-                style="width: 100%; max-height: 200px; object-fit: contain;" />
-            </ion-item>
+              <ion-item class="form-item">
+                <ion-label class="form-label">Estado</ion-label>
+                <ion-select class="form-select" [(ngModel)]="nuevoAlumno.Estatus">
+                  <ion-select-option [value]="true">Activo</ion-select-option>
+                  <ion-select-option [value]="false">Inactivo</ion-select-option>
+                </ion-select>
+              </ion-item>
 
-
-            <ion-item>
-              <ion-label>Personas Autorizadas</ion-label>
-              <ion-select [(ngModel)]="nuevoAlumno.autorizadas" multiple interface="popover">
-                <ion-select-option *ngFor="let p of autorizadas" [value]="p.documentId">{{ p.nombre
-                  }}</ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-item>
-              <ion-label>Docente</ion-label>
-              <ion-select [(ngModel)]="nuevoAlumno.docente" multiple interface="popover">
-                <ion-select-option *ngFor="let d of docente" [value]="d.documentId">{{ d.nombre }}</ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-button expand="block" color="success" (click)="isEditing ? updateAlum() : addAlum()">
-              {{ isEditing ? 'Actualizar' : 'Guardar' }}
-            </ion-button>
-          </ion-card-content>
+              <div class="row">
+                <ion-item class="form-item half-width">
+                  <ion-label class="form-label">Personas Autorizadas</ion-label>
+                  <ion-select class="form-select" [(ngModel)]="nuevoAlumno.autorizadas" multiple interface="popover">
+                    <ion-select-option *ngFor="let p of autorizadas" [value]="p.documentId">{{ p.nombre }}</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                
+                <ion-item class="form-item half-width">
+                  <ion-label class="form-label">Docente</ion-label>
+                  <ion-select class="form-select" [(ngModel)]="nuevoAlumno.docente" multiple interface="popover">
+                    <ion-select-option *ngFor="let d of docente" [value]="d.documentId">{{ d.nombre }}</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </div>
+              
+              <ion-button class="submit-btn" expand="block" (click)="isEditing ? updateAlum() : addAlum()">
+                {{ isEditing ? 'Actualizar' : 'Guardar' }}
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
         </ion-toolbar>
       </ion-content>
     </ng-template>

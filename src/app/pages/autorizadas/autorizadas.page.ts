@@ -61,6 +61,11 @@ export class AutorizadasPage implements OnInit {
       console.error('Error al cambiar estado:', error);
     });
   }
+
+    async logout() {
+    await this.storage.remove('token');
+    this.route.navigate(['/login']);
+  }
 }
 
 

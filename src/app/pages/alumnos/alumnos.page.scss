@@ -37,3 +37,235 @@ ion-modal ion-toolbar {
 
   --color: white;
 }
+
+/* Estilos base del modal (se mantienen igual) */
+.custom-modal {
+  --ion-background-color: #f8f9fa;
+  --ion-toolbar-background: #ffffff;
+}
+
+.modal-content {
+  --background: #f8f9fa;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+}
+
+.modal-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  padding: 0;
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin: 0;
+  width: 100%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 0;
+  background: #ffffff;
+}
+
+.modal-title {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close-btn {
+  --color: #95a5a6;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.modal-body {
+  padding: 16px;
+}
+
+/* Nuevos estilos para la organización */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.half-width {
+  flex: 1;
+  min-width: calc(50% - 8px);
+}
+
+/* Estilos para la sección de foto */
+.photo-section {
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.photo-upload {
+  flex: 1;
+  max-width: 120px;
+}
+
+.photo-item {
+  --background: transparent;
+  --border-color: #e0e0e0;
+  --border-radius: 8px;
+  --border-width: 1px;
+  --border-style: dashed;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.photo-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #7f8c8d;
+  cursor: pointer;
+}
+
+.photo-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.form-file {
+  display: none;
+}
+
+.photo-preview {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.preview-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+}
+
+/* Estilos para los elementos del formulario (se mantienen igual con pequeños ajustes) */
+.form-item {
+  --background: #ffffff;
+  --border-color: #e0e0e0;
+  --border-radius: 8px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+}
+
+.form-label {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.form-input, .form-select {
+  --background: #ffffff;
+  --color: #2c3e50;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
+/* Estilo para el botón de submit */
+.submit-btn {
+  --background: #2c3e50;
+  --background-activated: #34495e;
+  --background-hover: #34495e;
+  --border-radius: 8px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  margin-top: 24px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Cambio de color de texto a negro */
+.modal-title,
+.form-label,
+.form-input,
+.form-select,
+.photo-label span {
+  color: #000000 !important;
+}
+
+/* Corrección para el input de archivo funcional */
+.photo-upload {
+  cursor: pointer;
+  flex: 1;
+  max-width: 120px;
+}
+
+/* Mantenemos todos los demás estilos exactamente igual */
+/* ... (el resto del CSS permanece igual que en la versión anterior) ... */
+
+/* Estilos para la subida de imágenes */
+.photo-upload-container {
+  display: flex;
+  align-items: center;
+}
+
+.photo-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+  text-align: center;
+  padding: 10px;
+}
+
+.photo-upload-label:hover {
+  border-color: #2c3e50;
+  background: #f0f0f0;
+}
+
+.photo-icon {
+  font-size: 32px;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.photo-upload-label span {
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+/* Asegurar que el texto sea negro */
+.modal-title,
+.form-label,
+.form-input,
+.form-select,
+.photo-upload-label span {
+  color: #000000 !important;
+}
+
+/* Mantener el resto de estilos igual */
+.preview-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  margin-left: 16px;
+}
