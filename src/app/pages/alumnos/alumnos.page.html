@@ -1,17 +1,42 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>alumnos</ion-title>
+<ion-header>
+  <ion-toolbar color="#ffffff">
+    <ion-title>Alumnos</ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button routerLink="/home">
+        <ion-icon slot="start" name="home-outline"></ion-icon>
+        Inicio
+      </ion-button>
+      <ion-button routerLink="/alumnos">
+        <ion-icon slot="start" name="people-outline"></ion-icon>
+        Alumnos
+      </ion-button>
+      <ion-button routerLink="/docente">
+        <ion-icon slot="start" name="school-outline"></ion-icon>
+        Docentes
+      </ion-button>
+      <ion-button routerLink="/autorizadas">
+        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+        Autorizadas
+      </ion-button>
+      <ion-button routerLink="/salon">
+        <ion-icon slot="start" name="business-outline"></ion-icon>
+        Salones
+      </ion-button>
+    <button class="setars" (click)="logout()"> Cerrar sesión</button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
 <ion-content [fullscreen]="true">
 
-  <ion-button (click)="openAddModal()">
-    Agregar alumno <ion-icon slot="start" name="add"></ion-icon>
-  </ion-button>
+  <ion-button class="boton-blanco-negro" (click)="openAddModal()">
+  <ion-icon slot="start" name="add"></ion-icon>
+  Agregar alumno
+</ion-button>
+
 
 <ion-modal #modal class="custom-modal">
     <ng-template>
@@ -29,12 +54,12 @@
               <div class="row">
                 <ion-item class="form-item half-width">
                   <ion-label position="floating" class="form-label">Nombre</ion-label>
-                  <ion-input class="form-input" [(ngModel)]="nuevoAlumno.nombre"></ion-input>
+                  <ion-input class="form-input" [(ngModel)]="nuevoAlumno.nombre" placeholder="Nombre"></ion-input>
                 </ion-item>
 
                 <ion-item class="form-item half-width">
                   <ion-label position="floating" class="form-label">Apellido</ion-label>
-                  <ion-input class="form-input" [(ngModel)]="nuevoAlumno.apellido"></ion-input>
+                  <ion-input class="form-input" [(ngModel)]="nuevoAlumno.apellido" placeholder="Apellido"></ion-input>
                 </ion-item>
               </div>
 

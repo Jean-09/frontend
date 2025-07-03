@@ -269,3 +269,40 @@ ion-modal ion-toolbar {
   border: 2px solid #e0e0e0;
   margin-left: 16px;
 }
+
+ion-toolbar {
+  --color: #4A739C;
+  --color: #ffffff;
+}
+
+ion-button {
+  --color: #ffffff;
+}
+
+ion-button[color="danger"] {
+  --color: #f44336;
+}
+
+.setars {
+  border: 1px solid #000000; /* Borde negro */
+  background: transparent;
+  color: #000000; /* Texto negro */
+  border-radius: 20px;
+  padding: 5px 15px;
+}
+ion-button.boton-blanco-negro {
+  --background: white;
+  --color: black;
+  --border-color: black;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-radius: 10px;
+  font-weight: bold;
+  text-transform: none;
+}
+
+ion-button.boton-blanco-negro:hover {
+  --background: #f0f0f0;
+  --color: black;
+  --border-color: black;
+}

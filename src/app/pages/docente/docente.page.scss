@@ -48,3 +48,24 @@ ion-badge {
 .formulario-modal {
   padding: 20px;
 }
+
+ion-toolbar {
+  --background: #ffffff
+  --color: #ffffff;
+} 
+
+ion-button {
+  --color: #ffffff;
+}
+
+ion-button[color="danger"] {
+  --color: #f44336;
+}
+
+.setars {
+  border: 1px solid #000000; /* Borde negro */
+  background: transparent;
+  color: #000000; /* Texto negro */
+  border-radius: 20px;
+  padding: 5px 15px;
+}

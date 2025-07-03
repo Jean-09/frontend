@@ -1,0 +1,20 @@
+ion-toolbar {
+  --background: #004d5a;
+  --color: #ffffff;
+}
+
+ion-button {
+  --color: #ffffff;
+}
+
+ion-button[color="danger"] {
+  --color: #f44336;
+}
+
+.setars {
+  border: 1px solid #000000; /* Borde negro */
+  background: transparent;
+  color: #000000; /* Texto negro */
+  border-radius: 20px;
+  padding: 5px 15px;
+}

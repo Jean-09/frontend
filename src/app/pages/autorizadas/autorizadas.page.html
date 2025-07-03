@@ -1,10 +1,32 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header>
+  <ion-toolbar color="#ffffff">
     <ion-title>Autorizadas</ion-title>
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-      <button slot="end" class="setars" (click)="logout()"> Cerrar sesión</button>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/home">
+        <ion-icon slot="start" name="home-outline"></ion-icon>
+        Inicio
+      </ion-button>
+      <ion-button routerLink="/alumnos">
+        <ion-icon slot="start" name="people-outline"></ion-icon>
+        Alumnos
+      </ion-button>
+      <ion-button routerLink="/docente">
+        <ion-icon slot="start" name="school-outline"></ion-icon>
+        Docentes
+      </ion-button>
+      <ion-button routerLink="/autorizadas">
+        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+        Autorizadas
+      </ion-button>
+      <ion-button routerLink="/salon">
+        <ion-icon slot="start" name="business-outline"></ion-icon>
+        Salones
+      </ion-button>
+    <button class="setars" (click)="logout()"> Cerrar sesión</button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

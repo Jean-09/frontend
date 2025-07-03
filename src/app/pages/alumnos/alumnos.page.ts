@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage-angular';
-import { ApiService } from 'src/app/service/api.service';
+import { ApiService } from '../../service/api.service';
 import { AlertController } from '@ionic/angular';
 import { IonModal } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
@@ -30,7 +30,7 @@ export class AlumnosPage implements OnInit {
 
   }
 
-   openAddModal() {
+  openAddModal() {
     this.isEditing = false;
     this.alumnoEditId = null;
     this.limpiarFormulario();
@@ -41,12 +41,12 @@ export class AlumnosPage implements OnInit {
   openEditModal(alumno: any) {
     console.log(alumno)
     this.isEditing = true;
-    this.alumnoEditId = alumno.documentId;       
+    this.alumnoEditId = alumno.documentId;
     this.nuevoAlumno = {
       nombre: alumno.nombre,
       apellido: alumno.apellido,
       Estatus: alumno.Estatus,
-      foto: null,                                
+      foto: null,
       autorizadas: alumno.persona_autorizadas?.map((p: any) => p.documentId) || [],
       docente: alumno.docente?.documentId ? [alumno.docente.documentId] as any[] : [] as any[]
     };
@@ -62,7 +62,7 @@ export class AlumnosPage implements OnInit {
 
   async getToken() {
     this.token = await this.storage.get('token');
-     if (!this.token) {
+    if (!this.token) {
       this.route.navigate(['/login']);
     }
   }
@@ -77,45 +77,45 @@ export class AlumnosPage implements OnInit {
   previewImage: string | ArrayBuffer | null = null;
 
   getAlumnos(event?: any, reset: boolean = false) {
-  if (this.cargando) {
-    if (event) event.target.complete();
-    return;
-  }
-
-  if (reset) {
-    this.paginaActual = 1;
-    this.alumnos = [];
-  }
-
-  this.cargando = true;
-
-  this.api.getAlum(this.token, this.paginaActual, this.porPagina).then((res) => {
-    if (event) this.infiniteScrollEvent = event;
-
-    this.alumnos = [...this.alumnos, ...res];
-
-    this.alumnos.sort((a, b) => {
-      if (a.Estatus === b.Estatus) return 0;
-      if (a.Estatus === true) return -1;
-      return 1;
-    });
-
-    if (event) {
-      event.target.complete();
-      if (res.length < this.porPagina) {
-        event.target.disabled = true;
-      }
+    if (this.cargando) {
+      if (event) event.target.complete();
+      return;
     }
 
-    this.paginaActual++;
-    this.cargando = false;
+    if (reset) {
+      this.paginaActual = 1;
+      this.alumnos = [];
+    }
 
-  }).catch((error) => {
-    console.log(error);
-    if (event) event.target.complete();
-    this.cargando = false;
-  });
-}
+    this.cargando = true;
+
+    this.api.getAlum(this.token, this.paginaActual, this.porPagina).then((res) => {
+      if (event) this.infiniteScrollEvent = event;
+
+      this.alumnos = [...this.alumnos, ...res];
+
+      this.alumnos.sort((a, b) => {
+        if (a.Estatus === b.Estatus) return 0;
+        if (a.Estatus === true) return -1;
+        return 1;
+      });
+
+      if (event) {
+        event.target.complete();
+        if (res.length < this.porPagina) {
+          event.target.disabled = true;
+        }
+      }
+
+      this.paginaActual++;
+      this.cargando = false;
+
+    }).catch((error) => {
+      console.log(error);
+      if (event) event.target.complete();
+      this.cargando = false;
+    });
+  }
 
 
   getAutorizadas() {
@@ -126,7 +126,7 @@ export class AlumnosPage implements OnInit {
       console.log(error);
     })
   }
-  docente: any[]= [];
+  docente: any[] = [];
 
   getdocentes() {
     this.api.getDoce(this.token).then((res) => {
@@ -226,12 +226,12 @@ export class AlumnosPage implements OnInit {
 
           await this.api.imagenAlum(this.token, alumnoId, fileId);
 
-          if (!nuevoAlumnoParam) {
-            this.mostrarFormulario = false;
-            this.limpiarFormulario();
-            this.modal.dismiss();
-            await this.getAlumnos();
-          }
+
+          this.mostrarFormulario = false;
+          this.limpiarFormulario();
+          this.modal.dismiss();
+          this.getAlumnos();
+
 
         } catch (uploadError) {
           console.error('Error subiendo o ligando foto:', uploadError);
@@ -240,6 +240,11 @@ export class AlumnosPage implements OnInit {
       } else {
         if (!nuevoAlumnoParam) await this.presentAlert('Debes subir una foto para continuar.');
       }
+
+      this.mostrarFormulario = false;
+      this.limpiarFormulario();
+      this.modal.dismiss();
+      this.getAlumnos();
 
     } catch (error) {
       console.error('Error al agregar alumno:', error);
@@ -275,13 +280,13 @@ export class AlumnosPage implements OnInit {
   mostrarFormulario = false;
 
   nuevoAlumno: any = {
-  nombre: '',
-  apellido: '',
-  Estatus: true,
-  foto: null,
-  autorizadas: [],
-  docente: []
-};
+    nombre: '',
+    apellido: '',
+    Estatus: true,
+    foto: null,
+    autorizadas: [],
+    docente: []
+  };
 
 
   async presentAlert(message: string) {
@@ -302,7 +307,7 @@ export class AlumnosPage implements OnInit {
     })
   }
 
-    async logout() {
+  async logout() {
     await this.storage.remove('token');
     this.route.navigate(['/login']);
   }
