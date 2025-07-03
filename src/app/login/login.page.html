@@ -1,23 +1,45 @@
-<ion-content [fullscreen]="true">
-<ion-card>
-        <ion-card-header >
-          <ion-card-title>Iniciar sesión</ion-card-title>
-        </ion-card-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Administrador</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-        <ion-card-content >
-          <div>
-            <p>ingresa nombre de usuario
-              <input type="text" [(ngModel)]="username" placeholder="Usuario"/>
-            </p>
-            <p>ingresa Contraseña
-              <input type="password" [(ngModel)]="password"  placeholder="Contraseña"/>
-            </p>
-            <div >
-              <ion-button (click)="login()" class="oval-button">
-                Entrar
-              </ion-button>
-            </div>
-          </div>
-        </ion-card-content>
-      </ion-card>
+<ion-content [fullscreen]="true" class="login-content">
+
+  <!-- Título principal -->
+  <ion-card-title class="title">Bienvenido</ion-card-title>
+
+  <!-- Contenedor del formulario -->
+  <div class="form-wrapper">
+    <p class="label">
+      Correo Electrónico
+      <input
+        type="text"
+        [(ngModel)]="username"
+        placeholder="Ingrese su correo"
+      />
+    </p>
+
+    <p class="label">
+      Contraseña
+      <input
+        type="password"
+        [(ngModel)]="password"
+        placeholder="Ingrese su contraseña"
+      />
+    </p>
+
+    <a class="forgot">
+      ¿Olvidaste tu contraseña?
+    </a>
+
+    <ion-button
+      expand="block"
+      class="oval-button"
+      (click)="login()"
+    >
+      Entrar
+    </ion-button>
+  </div>
+
 </ion-content>

@@ -31,15 +31,14 @@ export class AutorizadasPage implements OnInit {
   }
 
   getAutorizadas() {
-    this.api.getAut(this.token).subscribe({
-      next: (res: any) => {
-        this.autorizadas = res.data;
+    this.api.getAut(this.token).then((res) => {
+        this.autorizadas = res;
         console.log(this.autorizadas);
-      },
-      error: (error: any) => {
+      }).catch((error)=>{
+
         console.log(error);
-      }
-    })
+
+      })
 
   }
 

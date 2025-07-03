@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage-angular';
 import { ApiService } from 'src/app/service/api.service';
+import { AlertController } from '@ionic/angular';
+import { IonModal } from '@ionic/angular';
+import { ViewChild } from '@angular/core';
 
 
 @Component({
@@ -11,8 +14,9 @@ import { ApiService } from 'src/app/service/api.service';
   standalone: false
 })
 export class AlumnosPage implements OnInit {
+  @ViewChild('modal', { static: false }) modal!: IonModal;
 
-  constructor(private api: ApiService, private storage: Storage, private route: Router) { }
+  constructor(private alertController: AlertController, private api: ApiService, private storage: Storage, private route: Router) { }
 
   async ngOnInit() {
     await this.storage.create();
@@ -26,90 +30,157 @@ export class AlumnosPage implements OnInit {
 
   async getToken() {
     this.token = await this.storage.get('token');
-    if (!this.token) {
-      this.route.navigate(['/login']);
-    }
+
   }
 
   alumnos: any[] = [];
+  paginaActual = 1;
+  porPagina = 20;
+  cargando = false;
+  infiniteScrollEvent: any = null;
   autorizadas: any[] = [];
 
-  getAlumnos() {
-    console.log('token', this.token)
-    this.api.getAlum(this.token).subscribe({
-      next: (res: any) => {
-        this.alumnos = res.data
-        console.log(this.alumnos)
-      },
-      error: (err: any) => {
-        console.log(err);
+  getAlumnos(event?: any) {
+    if (this.cargando) {
+      if (event) event.target.complete();
+      return;
+    }
+
+    this.cargando = true;
+    console.log('token', this.token);
+
+    this.api.getAlum(this.token, this.paginaActual, this.porPagina).then((res) => {
+      if (event) this.infiniteScrollEvent = event;
+
+      this.alumnos = [...this.alumnos, ...res];
+
+      this.alumnos.sort((a, b) => {
+        if (a.Estatus === b.Estatus) return 0;
+        if (a.Estatus === true) return -1;
+        return 1;
+      });
+
+      if (event) {
+        event.target.complete();
+        if (res.length < this.porPagina) {
+          event.target.disabled = true;
+        }
       }
-    })
+
+      this.paginaActual++;
+      this.cargando = false;
+
+      console.log(this.alumnos);
+    }).catch((error) => {
+      console.log(error);
+      if (event) event.target.complete();
+      this.cargando = false;
+    });
   }
 
   getAutorizadas() {
-    this.api.getAut(this.token).subscribe({
-      next: (res: any) => {
-        this.autorizadas = res.data;
-        console.log(this.autorizadas);
-      },
-      error: (error: any) => {
-        console.log(error);
-      }
+    this.api.getAut(this.token).then((res) => {
+      this.autorizadas = res.data;
+      console.log(this.autorizadas);
+    }).catch((error) => {
+      console.log(error);
     })
-
   }
+
+  previewImage: string | ArrayBuffer | null = null;
 
   seleccionarFoto(event: any) {
     const archivo = event.target.files[0];
     this.nuevoAlumno.foto = archivo;
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewImage = reader.result;
+    };
+    if (archivo) {
+      reader.readAsDataURL(archivo);
+    } else {
+      this.previewImage = null;
+    }
   }
 
-  borrar(a: any) {
-    const datosActualizados = false;
+  toggleStatus(a: any) {
+    const nuevoEstado = !a.Estatus; 
 
-
-    this.api.delAlumno(a, datosActualizados, this.token).subscribe({
-      next: (res) => {
-        console.log('Alumno desactivado:', res);
-        this.getAlumnos(); // Actualiza la lista después del cambio
-      },
-      error: (error) => {
-        console.error('Error al desactivar:', error);
-      }
+    this.api.delAlumno(a, nuevoEstado, this.token).then((res) => {
+      console.log('Estado cambiado:', res);
+      this.getAlumnos();
+    }).catch((error) => {
+      console.error('Error al cambiar estado:', error);
     });
   }
 
 
+
   update() {
-    
+
   }
 
-  async addAlum() {
+  async addAlum(nuevoAlumnoParam?: any) {
+    const alumno = nuevoAlumnoParam ?? this.nuevoAlumno;
+
     try {
-      const data = {
-        nombre: this.nuevoAlumno.nombre,
-        apellido: this.nuevoAlumno.apellido,
-        Estatus: this.nuevoAlumno.Estatus,
-        persona_autorizadas: this.nuevoAlumno.autorizadas
-      };
-
-      const createRes: any = await this.api.postAlum(data, this.token).toPromise();
-      const alumnoId = createRes.data.documentId;
-
-      if (this.nuevoAlumno.foto) {
-        const uploadRes: any = await this.api.uploadFile(this.token, this.nuevoAlumno.foto).toPromise();
-        await this.api.imagenAlum(this.token, alumnoId, uploadRes[0].id).toPromise();
+      if (!alumno.nombre || !alumno.apellido || !alumno.Estatus || !alumno.autorizadas) {
+        await this.presentAlert('Por favor, llena todos los datos.');
+        return;
       }
 
-      this.mostrarFormulario = false;
-      this.limpiarFormulario();
-      this.getAlumnos();
+      const data = {
+        nombre: alumno.nombre,
+        apellido: alumno.apellido,
+        Estatus: alumno.Estatus,
+        persona_autorizadas: alumno.autorizadas
+      };
+
+      const createRes = await this.api.postAlum(data, this.token);
+      const alumnoId = createRes.data.data.documentId;
+
+      if (alumno.foto) {
+        try {
+          const uploadRes = await this.api.uploadFile(this.token, alumno.foto);
+          const fileId = uploadRes.data[0].id;
+
+          await this.api.imagenAlum(this.token, alumnoId, fileId);
+
+          if (!nuevoAlumnoParam) {
+            this.mostrarFormulario = false;
+            this.limpiarFormulario();
+            this.modal.dismiss();
+            await this.getAlumnos();
+          }
+
+        } catch (uploadError) {
+          console.error('Error subiendo o ligando foto:', uploadError);
+          await this.presentAlert('Error al subir o ligar la foto.');
+        }
+      } else {
+        if (!nuevoAlumnoParam) await this.presentAlert('Debes subir una foto para continuar.');
+      }
 
     } catch (error) {
-      console.error(error);
+      console.error('Error al agregar alumno:', error);
+      if (!nuevoAlumnoParam) await this.presentAlert('Ocurrió un error al agregar el alumno.');
     }
   }
+
+  async addAlumBatch(alumnosArray: any[], concurrencyLimit = 3) {
+    let index = 0;
+
+    while (index < alumnosArray.length) {
+      const lote = alumnosArray.slice(index, index + concurrencyLimit);
+      await Promise.all(lote.map(alumno => this.addAlum(alumno)));
+
+      index += concurrencyLimit;
+    }
+  }
+
+
+
 
   limpiarFormulario() {
     this.nuevoAlumno = {
@@ -130,6 +201,16 @@ export class AlumnosPage implements OnInit {
     foto: null,
     autorizadas: []
   };
+
+  async presentAlert(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Atención',
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
 
 
 }

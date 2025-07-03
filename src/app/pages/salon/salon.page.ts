@@ -31,16 +31,14 @@ export class SalonPage implements OnInit {
   }
 
   getSalon() {
-    this.api.getSalon(this.token).subscribe({
-      next: (res: any) => {
-        this.salon = res.data;
-        console.log(this.salon)
-      },
-      error: (error: any) => {
-        console.log(error);
-      }
-    })
+    this.api.getSalon(this.token).then((res) => {
+        this.salon = res;
+        console.log(this.salon);
+      }).catch((error)=>{
 
+        console.log(error);
+
+      })
   }
 
 

@@ -31,16 +31,13 @@ export class LoginPage implements OnInit {
       password: this.password
     }
 
-    this.api.login(data).subscribe({
-      next: (res:any) =>{
+    this.api.login(data).then( (res:any) =>{
         console.log(res);
-        this.storage.set('token', res.jwt)
+        this.storage.set('token', res)
         this.route.navigateByUrl('/home')
-      }, 
-      error: (err:any) =>{
-        console.log(err);
-      }
-    });
+      }).catch((error)=>{
+        console.log(error);
+      })
   }
 
  

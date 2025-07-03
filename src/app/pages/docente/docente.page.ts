@@ -31,15 +31,14 @@ export class DocentePage implements OnInit {
   }
 
   getDocentes() {
-    this.api.getDoce(this.token).subscribe({
-      next: (res: any) => {
-        this.docentes = res.data;
-        console.log(this.docentes)
-      },
-      error: (error: any) => {
+    this.api.getDoce(this.token).then((res) => {
+        this.docentes = res;
+        console.log(this.docentes);
+      }).catch((error)=>{
+
         console.log(error);
-      }
-    })
+
+      })
 
   }
 
