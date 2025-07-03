@@ -62,7 +62,9 @@ export class AlumnosPage implements OnInit {
 
   async getToken() {
     this.token = await this.storage.get('token');
-
+     if (!this.token) {
+      this.route.navigate(['/login']);
+    }
   }
 
   token = '';

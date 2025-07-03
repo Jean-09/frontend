@@ -16,29 +16,35 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
     await this.storage.create()
+    await this.getToken()
   }
 
-  token='';
+  async logout() {
+    await this.storage.remove('token');
+    this.route.navigate(['/login']);
+  }
 
-  async getToken(){
+  token = '';
+
+  async getToken() {
     this.token = await this.storage.get('token');
-    if(!this.token){
+    if (!this.token) {
       this.route.navigate(['/login']);
     }
   }
 
-  estu(){
+  estu() {
     this.route.navigate(['/alumnos'])
   }
 
-  doce(){
+  doce() {
     this.route.navigate(['/docente'])
   }
 
-  persoAut(){
+  persoAut() {
     this.route.navigate(['/autorizadas']);
   }
-  salon(){
+  salon() {
     this.route.navigate(['/salon']);
   }
 
