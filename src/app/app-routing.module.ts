@@ -34,7 +34,19 @@ const routes: Routes = [
   {
     path: 'detalles-alumnos',
     loadChildren: () => import('./pages/detalles-alumnos/detalles-alumnos.module').then( m => m.DetallesAlumnosPageModule)
+  },  {
+    path: 'detalles-autorizadas',
+    loadChildren: () => import('./pages/updates/detalles-autorizadas/detalles-autorizadas.module').then( m => m.DetallesAutorizadasPageModule)
   },
+  {
+    path: 'detalles-docentes',
+    loadChildren: () => import('./pages/updates/detalles-docentes/detalles-docentes.module').then( m => m.DetallesDocentesPageModule)
+  },
+  {
+    path: 'detalles-salon',
+    loadChildren: () => import('./pages/updates/detalles-salon/detalles-salon.module').then( m => m.DetallesSalonPageModule)
+  },
+
 ];
 
 @NgModule({

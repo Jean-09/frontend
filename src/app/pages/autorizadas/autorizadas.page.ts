@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage-angular';
 import { ApiService } from 'src/app/service/api.service';
+import { AlertController, IonModal } from '@ionic/angular';
+import { ViewChild } from '@angular/core';
+import { IonPopover } from '@ionic/angular';
 
 @Component({
   selector: 'app-autorizadas',
@@ -10,8 +13,20 @@ import { ApiService } from 'src/app/service/api.service';
   standalone: false
 })
 export class AutorizadasPage implements OnInit {
+  @ViewChild('modal', { static: false }) modal!: IonModal;
+  @ViewChild('popover') popover!: IonPopover;
+  isMenuOpen = false;
 
-  constructor(private api: ApiService, private storage: Storage, private route: Router) { }
+  isEditing = false;
+  autorizadaEditId: string | null = null;
+
+  paginaActual = 1;
+  porPagina = 20;
+  cargando = false;
+  infiniteScrollEvent: any = null;
+  previewImage: string | ArrayBuffer | null = null;
+
+  constructor(private alertController: AlertController, private api: ApiService, private storage: Storage, private route: Router) { }
 
   async ngOnInit() {
     await this.storage.create();
@@ -19,6 +34,46 @@ export class AutorizadasPage implements OnInit {
     await this.getAutorizadas();
 
   }
+
+  openMenu(event: Event) {
+    this.isMenuOpen = true;
+    this.popover.event = event;
+  }
+
+
+  openAddModal() {
+    this.isEditing = false;
+    this.autorizadaEditId = null;
+    this.limpiarFormulario();
+    this.previewImage = null;
+    this.modal.present();
+  }
+
+  openEditModal(autorizada: any) {
+    console.log(autorizada)
+    this.isEditing = true;
+    this.autorizadaEditId = autorizada.documentId;
+    console.log('esto es lo que trae', autorizada)
+    this.nuevoAutorizado = {
+      nombre: autorizada.nombre,
+      apellido: autorizada.apellidos,
+      Estatus: autorizada.Estatus,
+      foto: null,
+      telefono: autorizada.telefono,
+      direccion: autorizada.Domicilio,
+      estatus: true,
+    };
+
+    if (autorizada.foto && autorizada.foto.url) {
+      this.previewImage = 'http://localhost:1337' + autorizada.foto.url;
+    } else {
+      this.previewImage = null;
+    }
+
+    this.modal.present();
+  }
+
+
 
   autorizadas: any[] = [];
   token = '';
@@ -30,27 +85,49 @@ export class AutorizadasPage implements OnInit {
     }
   }
 
-  getAutorizadas() {
-    this.api.getAut(this.token).then((res) => {
-        this.autorizadas = res;
-        console.log(this.autorizadas);
-      }).catch((error)=>{
+  getAutorizadas(event?: any, reset: boolean = false) {
+    if (this.cargando) {
+      if (event) event.target.complete();
+      return;
+    }
 
-        console.log(error);
+    if (reset) {
+      this.paginaActual = 1;
+      this.autorizadas = [];
+    }
 
-      })
+    this.cargando = true;
 
+    this.api.getAut(this.token, this.paginaActual, this.porPagina).then((res) => {
+      if (event) this.infiniteScrollEvent = event;
+
+      this.autorizadas = [...this.autorizadas, ...res];
+
+      this.autorizadas.sort((a, b) => {
+        if (a.estatus === b.estatus) return 0;
+        if (a.estatus === true) return -1;
+        return 1;
+      });
+
+      if (event) {
+        event.target.complete();
+        if (res.length < this.porPagina) {
+          event.target.disabled = true;
+        }
+      }
+
+      this.paginaActual++;
+      this.cargando = false;
+      console.log(this.autorizadas)
+
+    }).catch((error) => {
+      console.log(error);
+      if (event) event.target.complete();
+      this.cargando = false;
+    });
   }
 
-  borrar(id:any){
-
-  }
-
-  update(){
-
-  }
-
-       toggleStatus(a: any) {
+  toggleStatus(a: any) {
     const nuevoEstado = !a.estatus;
 
     this.api.delAut(a, nuevoEstado, this.token).then((res) => {
@@ -62,9 +139,155 @@ export class AutorizadasPage implements OnInit {
     });
   }
 
-    async logout() {
+  async updateAut() {
+    if (!this.autorizadaEditId) return;
+
+    try {
+      const data = {
+        nombre: this.nuevoAutorizado.nombre,
+        apellido: this.nuevoAutorizado.apellidos,
+        telefono: this.nuevoAutorizado.telefono,
+        Domicilio: this.nuevoAutorizado.direccion,
+        estatus: this.nuevoAutorizado.estatus,
+      };
+
+
+      await this.api.putAut(this.autorizadaEditId, data, this.token);
+
+      if (this.nuevoAutorizado.foto) {
+        const uploadRes = await this.api.uploadFileAut(this.token, this.nuevoAutorizado.foto);
+        const fileId = uploadRes.data[0].id;
+        await this.api.imagenAut(this.token, this.autorizadaEditId, fileId);
+      }
+
+      this.modal.dismiss();
+      this.limpiarFormulario();
+      this.getAutorizadas(undefined, true);
+    } catch (error) {
+      console.error(error);
+      this.presentAlert('Ocurrió un error al actualizar el docente.');
+    }
+  }
+
+  async addAut(nuevoAutorizadaParam?: any) {
+    const autorizada = nuevoAutorizadaParam ?? this.nuevoAutorizado;
+
+    try {
+      if (!autorizada.nombre || !autorizada.apellido || !autorizada.estatus || !autorizada.direccion || !autorizada.telefono) {
+        await this.presentAlert('Por favor, llena todos los datos.');
+        return;
+      }
+
+      const data = {
+        nombre: autorizada.nombre,
+        apellidos: autorizada.apellido,
+        telefono: autorizada.telefono,
+        Domicilio: autorizada.direccion,
+        estatus: autorizada.estatus,
+        user: autorizada.user,
+      };
+
+      const createRes = await this.api.postAut(data, this.token);
+      const docenteId = createRes.data.data.documentId;
+
+      if (autorizada.foto) {
+        try {
+          const uploadRes = await this.api.uploadFileAut(this.token, autorizada.foto);
+          const fileId = uploadRes.data[0].id;
+
+          await this.api.imagenAut(this.token, docenteId, fileId);
+        } catch (uploadError) {
+          console.error('Error subiendo o ligando foto:', uploadError);
+          await this.presentAlert('Error al subir o ligar la foto.');
+          return; // Detenemos la función si falla la imagen
+        }
+      } else {
+        if (!nuevoAutorizadaParam) await this.presentAlert('Debes subir una foto para continuar.');
+        return;
+      }
+
+      this.mostrarFormulario = false;
+      this.limpiarFormulario();
+      this.modal.dismiss();
+      this.getAutorizadas(undefined, true);
+
+    } catch (error) {
+      console.error('Error al agregar alumno:', error);
+      if (!nuevoAutorizadaParam) await this.presentAlert('Ocurrió un error al agregar el alumno.');
+    }
+  }
+
+
+  async addDoceBatch(docentesArray: any[], concurrencyLimit = 3) {
+    let index = 0;
+
+    while (index < docentesArray.length) {
+      const lote = docentesArray.slice(index, index + concurrencyLimit);
+      await Promise.all(lote.map(docente => this.addAut(docente)));
+
+      index += concurrencyLimit;
+    }
+  }
+
+  async logout() {
     await this.storage.remove('token');
     this.route.navigate(['/login']);
+  }
+
+  limpiarFormulario() {
+    this.nuevoAutorizado = {
+      nombre: '',
+      apellido: '',
+      telefono: '',
+      direccion: '',
+      estatus: true,
+      foto: null
+    };
+  }
+
+  mostrarFormulario = false;
+
+  nuevoAutorizado: any = {
+    nombre: '',
+    apellido: '',
+    telefono: '',
+    direccion: '',
+    estatus: true,
+    foto: null
+  };
+
+
+  async presentAlert(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Atención',
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  seleccionarFoto(event: any) {
+    const archivo = event.target.files[0];
+    this.nuevoAutorizado.foto = archivo;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewImage = reader.result;
+    };
+    if (archivo) {
+      reader.readAsDataURL(archivo);
+    } else {
+      this.previewImage = null;
+    }
+  }
+
+  verDetallesAut(autorizada: any) {
+    console.log('autorizada', autorizada)
+    this.route.navigate(['/detalles-autorizadas'], {
+      state: {
+        autorizada: autorizada
+      }
+    })
   }
 }
 

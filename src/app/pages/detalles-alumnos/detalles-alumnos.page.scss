@@ -19,10 +19,13 @@ ion-content.soft-bg {
 
 /* Título de la barra superior */
 ion-toolbar {
-  --background: var(--ion-color-card-background); /* Barra superior blanca */
-  --color: var(--ion-color-dark-gray); /* Texto del título gris oscuro */
-  border-bottom: 1px solid var(--ion-color-medium-gray); /* Línea sutil debajo de la barra */
+  --background: var(--ion-color-card-background);
+  --color: var(--ion-color-dark-gray);
+  border-bottom: 1px solid var(--ion-color-medium-gray);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
+
+
 
 ion-title {
   font-weight: 600; /* Título un poco más audaz */
@@ -152,25 +155,50 @@ ion-chip[color="danger"] {
   transform: translateY(-3px); /* Efecto al pasar el ratón */
 }
 
+/* Alineación vertical bonita entre imagen y textos */
 .info-card ion-card-header {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 0; /* Quita padding por defecto */
-  margin-bottom: 10px;
+  gap: 16px;
+  padding: 0;
 }
 
-.info-card ion-card-title {
-  font-size: 1.1em;
-  font-weight: 600;
+.info-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.95em;
+  color: black;
+}
+
+.etiqueta {
+  font-size: 0.75em;
+  color: var(--ion-color-light-text);
+  margin: 0;
+}
+
+.telefono {
+  margin: 0;
   color: var(--ion-color-dark-gray);
 }
 
+
+.info-card ion-card-title {
+  margin: 0;
+  line-height: 1.2;
+  flex: 1 1 100%;
+  color: var(--ion-color-dark-gray);
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
 .info-card ion-card-content {
-  padding: 0; /* Quita padding por defecto */
+  padding: 0;
   color: var(--ion-color-light-text);
   font-size: 0.95em;
+  margin-top: -8px; /* sube el número para alinearlo mejor */
 }
+
 
 /* Estilo específico para el header del docente si es diferente */
 .docente-header {

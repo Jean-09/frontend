@@ -99,3 +99,75 @@
   margin-bottom: 10px;
   border: 1px solid #e0e0e0; /* Borde sutil */
 }
+
+/* Media Queries para hacerlo responsivo */
+@media (max-width: 1024px) {
+  .content {
+    flex-direction: column;
+    text-align: center;
+    gap: 30px;
+  }
+  
+  .text-zone {
+    order: 2;
+  }
+  
+  .icon-zone {
+    order: 1;
+  }
+  
+  .bottom-icons {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .text-zone h1 {
+    font-size: 24px;
+  }
+  
+  .icon-zone ion-icon {
+    font-size: 60px;
+    padding: 20px;
+  }
+  
+  .btn-outline, .setars {
+    padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-card {
+    padding: 15px;
+    border-radius: 20px;
+  }
+  
+  .text-zone h1 {
+    font-size: 20px;
+  }
+  
+  .text-zone p {
+    font-size: 14px;
+  }
+  
+  .icon-item ion-icon {
+    padding: 15px;
+    font-size: 24px;
+  }
+  
+  .bottom-icons {
+    padding: 15px 0;
+    border-radius: 20px;
+  }
+  
+  .icon-zone ion-icon {
+    font-size: 50px;
+    padding: 15px;
+  }
+}

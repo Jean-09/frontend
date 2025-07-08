@@ -1,36 +1,43 @@
-ion-toolbar{
-    --background: white;
-    color: black;
-    font-family: "Arial", sans-serif;
+ion-toolbar {
+  --background: white;
+  color: black;
+  font-family: "Arial", sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
+
 .login-content {
-  --background: #f7f9fb;         // Gris muy claro
+  --background: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 56px);
+  padding: 20px;
+  font-family: "Segoe UI", sans-serif;
 }
 
-/* “Bienvenido” */
+/* Título */
 .title {
-  margin: 48px 0 32px;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
+  margin-bottom: 40px;
+  color: #1e293b;
   text-align: center;
-  color: #0a0a0a;
 }
 
-/* Contenedor */
+/* Contenedor del formulario */
 .form-wrapper {
   width: 100%;
-  max-width: 420px;              // Ancho fijo del formulario
-  padding: 0 16px;
+  max-width: 400px;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
-/* Etiquetas (p) */
+/* Etiquetas */
 .label {
   font-weight: 600;
-  font-size: 14px;
-  color: #1f2937;
+  font-size: 15px;
+  color: #334155;
   margin-bottom: 6px;
 }
 
@@ -39,32 +46,60 @@ ion-toolbar{
   width: 100%;
   padding: 14px 18px;
   margin: 6px 0 24px;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
-  background: #ffffff;
-  font-size: 14px;
-  box-sizing: border-box;
+  border: none;
+  border-radius: 10px;
+  background: #e2e8f0;
+  font-size: 15px;
+  transition: box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.form-wrapper input:focus {
+  outline: none;
+  background: #cbd5e1;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
 }
 
 .form-wrapper input::placeholder {
-  color: #9ca3af;
+  color: #64748b;
 }
 
-/* Enlace “Olvidaste tu contraseña” */
-.forgot {
-  display: block;
-  margin: -12px 0 24px;
-  font-size: 13px;
-  color: #0d6efd;
-  text-decoration: none;
-}
-
-/* Botón Entrar */
+/* Botón */
 .oval-button {
-  --background: #0d6efd;         // Azul vibrante
-  --border-radius: 6px;
-  --box-shadow: none;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
+  --background: #2563eb;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+  --padding-top: 14px;
+  --padding-bottom: 14px;
   font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.oval-button:hover {
+  transform: translateY(-1px);
+  --box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+}
+
+/* RESPONSIVE para pantallas pequeñas */
+@media (max-width: 480px) {
+  .title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .form-wrapper {
+    padding: 0 10px;
+  }
+
+  .form-wrapper input {
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .oval-button {
+    font-size: 15px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+  }
 }

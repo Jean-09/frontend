@@ -5,16 +5,20 @@ import { ApiService } from '../../service/api.service';
 import { AlertController } from '@ionic/angular';
 import { IonModal } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
+import { IonPopover } from '@ionic/angular';
+import { IonSearchbar } from '@ionic/angular/standalone';
 
 
 @Component({
   selector: 'app-alumnos',
   templateUrl: './alumnos.page.html',
   styleUrls: ['./alumnos.page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class AlumnosPage implements OnInit {
   @ViewChild('modal', { static: false }) modal!: IonModal;
+  @ViewChild('popover') popover!: IonPopover;
+  isMenuOpen = false;
 
   isEditing = false;
   alumnoEditId: string | null = null;
@@ -28,6 +32,27 @@ export class AlumnosPage implements OnInit {
     await this.getAutorizadas();
     await this.getdocentes();
 
+  }
+
+
+  buscador(query: string) {
+  const searchTerm = query?.trim() || '';
+  
+  this.api.GetDocent(searchTerm, this.token)
+    .then((res) => {
+      this.docente = res.data || [];
+    })
+    .catch((error) => {
+      console.error('Error al buscar docentes', error);
+      this.docente = []; // Limpiar resultados en caso de error
+    });
+}
+
+
+  // Abre el menú desplegable
+  openMenu(event: Event) {
+    this.isMenuOpen = true;
+    this.popover.event = event;
   }
 
   openAddModal() {
@@ -109,6 +134,7 @@ export class AlumnosPage implements OnInit {
 
       this.paginaActual++;
       this.cargando = false;
+      console.log(this.alumnos)
 
     }).catch((error) => {
       console.log(error);
@@ -230,7 +256,7 @@ export class AlumnosPage implements OnInit {
           this.mostrarFormulario = false;
           this.limpiarFormulario();
           this.modal.dismiss();
-          this.getAlumnos();
+          this.getAlumnos(undefined, true);
 
 
         } catch (uploadError) {
