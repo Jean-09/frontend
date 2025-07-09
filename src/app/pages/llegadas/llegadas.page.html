@@ -45,7 +45,7 @@
 
 <ion-popover #popover [isOpen]="isMenuOpen" (didDismiss)="isMenuOpen = false">
   <ng-template>
-    <ion-content>
+    <ion-content >
       <ion-list style=" background-color: rgb(231, 230, 230)">
         <ion-item button routerLink="/home">
           <ion-icon style="color: black;" name="home-outline" slot="start"></ion-icon>
@@ -82,60 +82,61 @@
   </ng-template>
 </ion-popover>
 
-<ion-content class="ion-padding soft-bg" style="--background: white;">
-  <section class="alumno-section">
-    <div class="foto-alumno" *ngIf="persona.foto && persona.foto[0]?.url">
-      <div class="photo-placeholder grande">
-        <img [src]="'http://localhost:1337' + persona.foto.url" alt="Foto de perfil">
-      </div>
-      <ion-text *ngIf="!persona.foto || !persona.foto[0]?.url">
-        <p>No foto</p>
-      </ion-text>
-    </div>
-
-    <ion-card class="alumno-card">
-      <ion-card-header>
-        <ion-card-title>
-          {{ persona.nombre }} 
-          {{ persona.apellidos }}
-          <ion-chip [color]="persona.estatus ? 'success' : 'danger'">
-          {{ persona.estatus ? 'Activo' : 'Inactivo' }}
-        </ion-chip>
-        </ion-card-title>
-        
-      </ion-card-header>
-
-      <ion-card-content class="docente-info-extra">
-        <div class="info-linea">
-          <p class="etiqueta">Teléfono</p>
-          <p class="valor">{{ persona.telefono }}</p>
-        </div>
-        <div class="info-linea">
-          <p class="etiqueta">Domicilio</p>
-          <p class="valor">{{ persona.Domicilio }}</p>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </section>
-
+<ion-content class="ion-padding soft-bg" style="--background: #f4f4f4;">
   <section class="inferior-section">
     <div class="autorizadas-wrapper">
-      <h3 style="color: black;">Alumnos a su cargo</h3>
-      <div class="autorizadas-grid">
-        <ion-card *ngFor="let a of persona.alumnos" class="info-card">
-          <ion-card-header>
-            <div class="photo-placeholder pequeño">
-              <img [src]="'http://localhost:1337' + a.foto[0].url" alt="Foto del alumno">
+      <h3 style="color: black; text-align: center;">Registro de Llegadas</h3>
+
+      <ion-card class="white-card" *ngIf="llegadas">
+        <ion-card-content>
+
+          <!-- CONTENEDOR HORIZONTAL -->
+          <div class="row-info">
+            <!-- FECHA Y HORA -->
+            <div class="info-bloque">
+              <h4 class="section-title">Fecha y Hora</h4>
+              <p><strong>Fecha:</strong> {{ llegadas.horaLlegada | date: 'fullDate' }}</p>
+              <p><strong>Hora de llegada:</strong> {{ llegadas.horaLlegada | date: 'shortTime' }}</p>
+              <p><strong>Hora de entrega:</strong> {{ llegadas.horaEntrega | date: 'shortTime' }}</p>
             </div>
-            <div class="info-texto">
-              <p class="etiqueta">Nombre</p>
-              <ion-card-title>{{ a.nombre }} {{ a.apellido }}</ion-card-title>
-              <p class="etiqueta">Usuario</p>
-              <p class="telefono">{{ a.user }}</p>
+
+            <!-- ALUMNO -->
+            <div class="info-bloque" *ngIf="llegadas.alumno">
+              <h4 class="section-title">Alumno recogido</h4>
+              <div class="info-card-header">
+                <div class="photo-placeholder redondo">
+                  <img *ngIf="llegadas.alumno.foto && llegadas.alumno.foto[0]?.url"
+                       [src]="'http://localhost:1337' + llegadas.alumno.foto[0].url"
+                       alt="Foto del alumno">
+                </div>
+                <div class="info-texto">
+                  <p>{{ llegadas.alumno.nombre }} {{ llegadas.alumno.apellido }}</p>
+                </div>
+              </div>
             </div>
-          </ion-card-header>
-        </ion-card>
-      </div>
+
+            <!-- DOCENTE -->
+            <div class="info-bloque" *ngIf="llegadas.docente">
+              <h4 class="section-title">Docente encargado</h4>
+              <div class="info-card-header">
+                <div class="photo-placeholder redondo">
+                  <img *ngIf="llegadas.docente.foto && llegadas.docente.foto[0]?.url"
+                       [src]="'http://localhost:1337' + llegadas.docente.foto[0].url"
+                       alt="Foto del docente">
+                </div>
+                <div class="info-texto">
+                  <p>{{ llegadas.docente.nombre }} {{ llegadas.docente.apellido }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
     </div>
   </section>
 </ion-content>
+
+
+
+

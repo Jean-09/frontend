@@ -47,7 +47,7 @@ export class ApiService {
     });
 
     const start = (pagina - 1) * porPagina;
-    const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate][0]=foto&populate[persona_autorizadas][populate][0]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate][0]=foto&populate[persona_autorizadas][populate][0]=foto&populate[llegada][populate][docente][populate]=foto&&populate[llegada][populate][alumno][populate]=foto&populate[llegada][populate][persona_autorizada][populate]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
   }
@@ -106,7 +106,7 @@ export class ApiService {
     });
 
     const start = (pagina - 1) * porPagina;
-    const url = `${this.url}/docentes?populate=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+    const url = `${this.url}/docentes?populate[foto]=true&populate[alumnos][populate][0]=foto&populate[user][populate]=*&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
   }
@@ -175,7 +175,7 @@ export class ApiService {
     });
 
     const start = (pagina - 1) * porPagina;
-    const url = `${this.url}/persona-autorizadas?populate=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+    const url = `${this.url}/persona-autorizadas?populate[foto]=true&populate[alumnos][populate][0]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
   }
@@ -238,7 +238,7 @@ export class ApiService {
     });
 
     const start = (pagina - 1) * porPagina;
-    const url = `${this.url}/salons?populate=*&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+    const url = `${this.url}/salons?populate[alumnos][populate][0]=foto&populate[docente][populate][0]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
   }

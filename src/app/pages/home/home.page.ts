@@ -44,8 +44,13 @@ export class HomePage implements OnInit {
   persoAut() {
     this.route.navigate(['/autorizadas']);
   }
+  
   salon() {
     this.route.navigate(['/salon']);
+  }
+
+  user() {
+    this.route.navigate(['/user']);
   }
 
 }

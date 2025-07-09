@@ -89,7 +89,7 @@
               <div class="row">
                 <ion-item class="form-item half-width">
                   <ion-label position="floating" class="form-label">Numero de salón</ion-label>
-                  <ion-input type="number" class="form-input" [(ngModel)]="nuevoSalon.Numero" placeholder="No salon"></ion-input>
+                  <ion-input type="number" class="form-input" [(ngModel)]="nuevoSalon.Numero" placeholder="N° salon"></ion-input>
                 </ion-item>
 
               </div>
@@ -169,7 +169,7 @@
 
               <ion-col size="1.5"></ion-col>
               <ion-col size="3" (click)="verDetallesSalon(s)">{{s.Numero}}</ion-col>
-              <ion-col size="3">{{s.docente.nombre | titlecase}}</ion-col>
+              <ion-col size="3" (click)="verDetallesSalon(s)">{{s.docente.nombre | titlecase}}</ion-col>
 
               <!-- Estado clickeable -->
               <ion-col size="3" (click)="toggleStatus(s);">

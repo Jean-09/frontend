@@ -256,3 +256,73 @@ ion-chip[color="danger"] {
     font-size: 1.2em;
   }
 }
+
+ion-item{
+  --background: white !important ;
+  color: #000000;
+}
+
+.toolbar-buttons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.more-button {
+  display: none !important;
+}
+
+.menu-button,
+.logout-button {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 943px) {
+  .menu-button,
+  .logout-button {
+    display: none !important;
+  }
+
+  .more-button {
+    display: block !important;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    color: #000000;
+  }
+
+  .toolbar-buttons {
+    gap: 2px;
+  }
+}
+
+.toolbar-buttons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+  .toolbar-buttons {
+    gap: 2px;
+  }
+
+  
+.edit-button {
+  --background: #f5f5f5; /* Blanco oscuro/gris claro */
+  --color: var(--ion-color-primary);
+  --border-radius: 16px;
+  --border-width: 1px;
+  --border-color: #e0e0e0;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  height: 42px; /* Misma altura que los badges */
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin: 0;
+  margin-top: -6.5px;
+  
+  &:hover {
+    --background: #eeeeee;
+  }
+}

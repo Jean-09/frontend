@@ -52,7 +52,6 @@ export class DocentePage implements OnInit {
       apellido: docente.apellido,
       estatus: docente.estatus,
       foto: null,
-      user: docente.user?.map((p: any) => p.documentId) || [],
 
     };
 
@@ -178,7 +177,7 @@ export class DocentePage implements OnInit {
     const docente = nuevoDocenteParam ?? this.nuevoDocente;
 
     try {
-      if (!docente.nombre || !docente.apellido || !docente.estatus || !docente.user) {
+      if (!docente.nombre || !docente.apellido || !docente.estatus) {
         await this.presentAlert('Por favor, llena todos los datos.');
         return;
       }
@@ -187,7 +186,6 @@ export class DocentePage implements OnInit {
         nombre: docente.nombre,
         apellido: docente.apellido,
         estatus: docente.estatus,
-        user: docente.user,
       };
       console.log(data)
 
@@ -243,8 +241,7 @@ export class DocentePage implements OnInit {
       nombre: '',
       apellido: '',
       estatus: true,
-      foto: null,
-      user: []
+      foto: null
     };
   }
 
@@ -254,8 +251,7 @@ export class DocentePage implements OnInit {
     nombre: '',
     apellido: '',
     estatus: true,
-    foto: null,
-    user: []
+    foto: null
   };
 
   async presentAlert(message: string) {

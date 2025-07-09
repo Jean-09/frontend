@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button style="color: black;"></ion-back-button>
     </ion-buttons>
-    <ion-title style="color: black;">Alumnos</ion-title>
+    <ion-title style="color: black;">Docentes</ion-title>
 
     <ion-buttons slot="end" class="toolbar-buttons">
       <ion-button routerLink="/home" class="menu-button">
@@ -76,7 +76,7 @@
         <ion-toolbar class="modal-toolbar">
           <ion-card class="modal-card">
             <ion-card-header class="modal-header">
-              <ion-card-title class="modal-title">{{ isEditing ? 'Editar Alumno' : 'Nuevo Alumno' }}</ion-card-title>
+              <ion-card-title class="modal-title">{{ isEditing ? 'Editar Docente' : 'Nuevo Docente' }}</ion-card-title>
               <ion-button class="modal-close-btn" fill="clear" (click)="modal.dismiss()">
                 <ion-icon name="close" slot="icon-only"></ion-icon>
               </ion-button>
@@ -164,7 +164,7 @@
             <ion-row *ngFor="let d of docentes" class="data-row">
               <!-- (click)="verDetallesAlum(d)" -->
               <ion-col size="2" >
-                <ion-avatar *ngIf="d.foto && d.foto[0]?.url" class="avatar-pequeno">
+                <ion-avatar (click)="verDetallesDoce(d)" *ngIf="d.foto && d.foto[0]?.url" class="avatar-pequeno">
                   <img [src]="'http://localhost:1337' + d.foto[0].url" alt="Foto de perfil">
                 </ion-avatar>
                 <ion-text *ngIf="!d.foto || !d.foto[0]?.url">
@@ -173,7 +173,7 @@
               </ion-col>
               <!-- (click)="verDetallesAlum(a)" -->
               <ion-col size="2.5" (click)="verDetallesDoce(d)">{{d.nombre | titlecase}}</ion-col>
-              <ion-col size="2.5">{{d.apellido | titlecase}}</ion-col>
+              <ion-col size="2.5" (click)="verDetallesDoce(d)">{{d.apellido | titlecase}}</ion-col>
 
               <!-- Estado clickeable -->
               <ion-col size="2.5" (click)="toggleStatus(d);">

@@ -4,13 +4,12 @@ import { IonModal, IonPopover } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 
 @Component({
-  selector: 'app-detalles-alumnos',
-  templateUrl: './detalles-alumnos.page.html',
-  styleUrls: ['./detalles-alumnos.page.scss'],
+  selector: 'app-llegadas',
+  templateUrl: './llegadas.page.html',
+  styleUrls: ['./llegadas.page.scss'],
   standalone: false
 })
-export class DetallesAlumnosPage implements OnInit {
-
+export class LlegadasPage implements OnInit {
 
   @ViewChild('modal', { static: false }) modal!: IonModal;
   @ViewChild('popover') popover!: IonPopover;
@@ -20,19 +19,18 @@ export class DetallesAlumnosPage implements OnInit {
     this.popover.event = event;
   }
 
-  async logout() {
+    async logout() {
     await this.storage.remove('token');
     this.route.navigate(['/login']);
   }
 
-
-  constructor(private storage: Storage, private route: Router) { }
+  constructor( private storage: Storage, private route: Router) { }
 
   async ngOnInit() {
-    await this.getAlumno();
+    await this.getLlegadas();
     await this.getToken
   }
-  token = '';
+  token='';
 
   async getToken() {
     this.token = await this.storage.get('token');
@@ -40,20 +38,12 @@ export class DetallesAlumnosPage implements OnInit {
       this.route.navigate(['/login']);
     }
   }
-  alumno: any;
 
-  getAlumno() {
-    this.alumno = history.state.alumno
-    console.log(this.alumno)
-  }
+  llegadas:any;
 
-  verLlegadas(alumno: any) {
-    console.log('LLegadas por el alumno', alumno)
-    this.route.navigate(['/llegadas'], {
-      state: {
-        llegadas: alumno.llegada
-      }
-    })
+  getLlegadas(){
+    this.llegadas = history.state.llegadas
+    console.log('Esto es lo que llega',this.llegadas)
   }
 
 }

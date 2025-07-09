@@ -23,7 +23,7 @@ ion-row {
 }
 
 ion-modal {
-  --height: 55%;
+  --height: 62%;
   --border-radius: 16px;
   --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
@@ -523,3 +523,58 @@ ion-icon[name="create-outline"] {
   min-width: 80px; /* Ancho similar al botón */
   text-align: center;
 }
+
+.white-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+  margin: 16px auto;
+}
+
+.row-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  text-align: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.info-bloque {
+  flex: 1;
+  min-width: 200px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.photo-placeholder.redondo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #eee;
+  margin: 0 auto 10px auto;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.info-texto p {
+  font-size: 1rem;
+  color: #333;
+}
+

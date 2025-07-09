@@ -46,6 +46,14 @@ const routes: Routes = [
     path: 'detalles-salon',
     loadChildren: () => import('./pages/updates/detalles-salon/detalles-salon.module').then( m => m.DetallesSalonPageModule)
   },
+  {
+    path: 'user',
+    loadChildren: () => import('./pages/user/user.module').then( m => m.UserPageModule)
+  },
+  {
+    path: 'llegadas',
+    loadChildren: () => import('./pages/llegadas/llegadas.module').then( m => m.LlegadasPageModule)
+  },
 
 ];
 

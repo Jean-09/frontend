@@ -1,0 +1,335 @@
+ion-item{
+  --background: white !important ;
+  color: #000000;
+}
+
+.toolbar-buttons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.more-button {
+  display: none !important;
+}
+
+.menu-button,
+.logout-button {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 943px) {
+  .menu-button,
+  .logout-button {
+    display: none !important;
+  }
+
+  .more-button {
+    display: block !important;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    color: #000000;
+  }
+
+  .toolbar-buttons {
+    gap: 2px;
+  }
+}
+
+.toolbar-buttons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+  .toolbar-buttons {
+    gap: 2px;
+  }
+
+:root {
+  --ion-color-light-background: #f8f8f8;
+  --ion-color-medium-gray: #e0e0e0;
+  --ion-color-dark-gray: #505050;
+  --ion-color-light-text: #808080;
+  --ion-color-card-background: #ffffff;
+  --ion-color-success-chip: #4CAF50;
+  --ion-color-danger-chip: #F44336;
+}
+
+/* Ajustes generales para el contenido */
+ion-content.soft-bg {
+  --background: var(--ion-color-light-background);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; /* Fuente moderna y legible */
+}
+
+/* Título de la barra superior */
+ion-toolbar {
+  --background: var(--ion-color-card-background);
+  --color: var(--ion-color-dark-gray);
+  border-bottom: 1px solid var(--ion-color-medium-gray);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+
+
+ion-title {
+  font-weight: 600; /* Título un poco más audaz */
+  font-size: 1.2em;
+}
+
+/* Sección principal del alumno (foto y tarjeta de nombre) */
+.alumno-section {
+  display: flex;
+  flex-direction: column; /* Apila la foto y la tarjeta */
+  align-items: center; /* Centra horizontalmente */
+  padding: 20px 0; /* Espaciado vertical */
+  position: relative; /* Para posicionar elementos si fuera necesario */
+}
+
+.foto-alumno {
+  margin-bottom: 20px; /* Espacio entre la foto y la tarjeta */
+  z-index: 10; /* Asegura que la foto esté por encima */
+}
+
+.photo-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Asegura que la imagen no se desborde */
+  background-color: var(--ion-color-medium-gray); /* Fondo gris para el placeholder */
+  color: var(--ion-color-dark-gray);
+  font-weight: bold;
+  border-radius: 50%; /* Fotos circulares */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.photo-placeholder.grande {
+  width: 150px;
+  height: 150px;
+  border: 4px solid var(--ion-color-card-background); /* Borde blanco alrededor de la foto */
+}
+
+.photo-placeholder.grande img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cubre el área sin distorsionar */
+  border-radius: 50%; /* Asegura que la imagen dentro también sea circular */
+}
+
+.photo-placeholder.pequeño {
+  width: 60px;
+  height: 60px;
+  font-size: 0.9em;
+  flex-shrink: 0; /* Evita que se encoja en flexbox */
+}
+
+/* Tarjeta principal del alumno */
+.alumno-card {
+  width: 95%; /* Ocupa casi todo el ancho */
+  max-width: 500px; /* Ancho máximo para el diseño responsivo */
+  background: var(--ion-color-card-background);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Sombra más pronunciada para la tarjeta principal */
+  text-align: center; /* Centra el contenido de la tarjeta */
+  margin-top: -70px; /* Superpone la tarjeta con la foto */
+  padding-top: 80px; /* Espacio para la foto superpuesta */
+}
+
+.alumno-card ion-card-header {
+  padding-bottom: 10px; /* Espaciado inferior del header */
+}
+
+.alumno-card ion-card-title {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: var(--ion-color-dark-gray);
+  margin-bottom: 8px;
+}
+
+ion-chip {
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+}
+
+ion-chip[color="success"] {
+  --background: var(--ion-color-success-chip);
+  --color: white;
+}
+
+ion-chip[color="danger"] {
+  --background: var(--ion-color-danger-chip);
+  --color: white;
+}
+
+/* Sección inferior (Personas Autorizadas y Docente) */
+.inferior-section {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* Espacio entre las secciones de autorizadas y docente */
+}
+
+.inferior-section h3 {
+  font-size: 1.4em;
+  color: var(--ion-color-dark-gray);
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Grid para Personas Autorizadas */
+.autorizadas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Columnas responsivas */
+  gap: 20px; /* Espacio entre las tarjetas */
+  justify-content: center; /* Centra las tarjetas si no llenan la fila */
+}
+
+/* Tarjetas de información (personas autorizadas y docente) */
+.info-card {
+  background: var(--ion-color-card-background);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra más ligera para tarjetas secundarias */
+  transition: transform 0.2s ease-in-out;
+  padding: 15px;
+}
+
+.info-card:hover {
+  transform: translateY(-3px); /* Efecto al pasar el ratón */
+}
+
+/* Alineación vertical bonita entre imagen y textos */
+.info-card ion-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0;
+}
+
+.info-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.95em;
+  color: black;
+}
+
+.etiqueta {
+  font-size: 0.75em;
+  color: var(--ion-color-light-text);
+  margin: 0;
+}
+
+.telefono {
+  margin: 0;
+  color: var(--ion-color-dark-gray);
+}
+
+
+.info-card ion-card-title {
+  margin: 0;
+  line-height: 1.2;
+  flex: 1 1 100%;
+  color: var(--ion-color-dark-gray);
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.info-card ion-card-content {
+  padding: 0;
+  color: var(--ion-color-light-text);
+  font-size: 0.95em;
+  margin-top: -8px; /* sube el número para alinearlo mejor */
+}
+/* Media Queries para responsividad */
+@media (min-width: 768px) {
+  .alumno-section {
+    flex-direction: row; /* Foto y tarjeta en fila en pantallas más grandes */
+    justify-content: center;
+    align-items: flex-start; /* Alinea al inicio si son de diferentes alturas */
+    padding-top: 40px;
+  }
+
+  .foto-alumno {
+    margin-right: 40px; /* Espacio entre la foto y la tarjeta */
+    margin-bottom: 0;
+  }
+
+  .alumno-card {
+    margin-top: 0; /* Resetea la superposición */
+    padding-top: 20px; /* Padding normal */
+    text-align: left; /* Alinea el texto a la izquierda en pantallas grandes */
+    max-width: 400px;
+    width: auto; /* Permite que el ancho se ajuste al contenido si no hay max-width */
+  }
+
+  .alumno-card ion-card-header {
+    text-align: left; /* Ajusta el texto del header */
+    display: block; /* Vuelve a bloque para que el título y chip no estén en flex */
+  }
+
+  .alumno-card ion-card-title {
+    margin-bottom: 5px; /* Ajuste el margen */
+  }
+
+  .inferior-section {
+    padding: 20px 40px; /* Más padding horizontal en pantallas grandes */
+  }
+}
+
+@media (max-width: 480px) {
+  .alumno-card {
+    padding-top: 60px; /* Ajuste si la foto es un poco más pequeña */
+    margin-top: -50px;
+  }
+
+  .photo-placeholder.grande {
+    width: 120px;
+    height: 120px;
+  }
+
+  .inferior-section h3 {
+    font-size: 1.2em;
+  }
+
+
+}
+
+.docente-info-extra {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-linea {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ion-color-medium-gray);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+
+.info-linea:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.etiqueta {
+  font-weight: 600;
+  color: var(--ion-color-light-text);
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.valor {
+  color: var(--ion-color-dark-gray);
+  font-weight: 500;
+  font-size: 1em;
+  margin: 0;
+  text-align: right;
+}

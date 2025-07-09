@@ -51,6 +51,7 @@
           <ion-icon style="color: black;" name="people-outline" slot="start"></ion-icon>
           <ion-label>Alumnos</ion-label>
         </ion-item>
+
         <ion-button routerLink="/docente" class="menu-button">
         <ion-icon slot="start" name="school-outline" style="color: black;"></ion-icon>
         <span class="button-text" style="color: black;">Docentes</span>
@@ -195,7 +196,7 @@
             <!-- Estudiantes -->
             <ion-row *ngFor="let a of autorizadas" class="data-row">
               <ion-col size="1">
-                <ion-avatar *ngIf="a.foto && a.foto?.url" class="avatar-pequeno">
+                <ion-avatar (click)="verDetallesAut(a)" *ngIf="a.foto && a.foto?.url" class="avatar-pequeno">
                   <img [src]="'http://localhost:1337' + a.foto.url" alt="Foto de perfil">
                 </ion-avatar>
                 <ion-text *ngIf="!a.foto || !a.foto?.url">
@@ -204,9 +205,9 @@
               </ion-col>
 
               <ion-col size="2" (click)="verDetallesAut(a)">{{a.nombre | titlecase}}</ion-col>
-              <ion-col size="2">{{a.apellidos | titlecase}}</ion-col>
-              <ion-col size="2">{{a.telefono}}</ion-col>
-              <ion-col size="2">{{a.Domicilio}}</ion-col>
+              <ion-col size="2" (click)="verDetallesAut(a)">{{a.apellidos | titlecase}}</ion-col>
+              <ion-col size="2" (click)="verDetallesAut(a)">{{a.telefono}}</ion-col>
+              <ion-col size="2" (click)="verDetallesAut(a)">{{a.Domicilio}}</ion-col>
 
               <!-- Estado clickeable -->
               <ion-col size="2" (click)="toggleStatus(a);">
