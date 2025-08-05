@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular'
 import axios, { AxiosHeaders } from 'axios';
 import { environment } from 'src/environments/environment.prod';
+import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -15,13 +16,14 @@ export class ApiService {
     this.storage.create()
   }
   // crear usuarios
-  async postUser(data: any, token: string) {
-    console.log(data);
+  async postUser(user: any, token: string) {
+    console.log('Usuario regitrado', user);
     let options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
     });
-    return axios.post(this.url + '/users', { data: data }, { headers: options });
+    return axios.post(this.url + '/auth/local/register', { username: user.username, email: user.email, password: user.password }, { headers: options });
   }
+
 
   async deltUser(userId: any, token: string) {
     console.log(userId);
@@ -47,7 +49,7 @@ export class ApiService {
     });
 
     const start = (pagina - 1) * porPagina;
-const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate][0]=foto&populate[persona_autorizadas][populate][0]=foto&populate[llegada][populate][docente][populate]=foto&&populate[llegada][populate][alumno][populate]=foto&populate[llegada][populate][persona_autorizada][populate]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+    const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate][0]=foto&populate[persona_autorizadas][populate][0]=foto&populate[llegada][populate][docente][populate]=foto&&populate[llegada][populate][alumno][populate]=foto&populate[llegada][populate][persona_autorizada][populate]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
   }
@@ -112,7 +114,7 @@ const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate]
   }
 
   async postDoce(data: any, token: string) {
-    console.log(' datos enviados de docentes',data);
+    console.log(' datos enviados de docentes', data);
     let options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
     });
@@ -204,7 +206,7 @@ const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate]
     return axios.put(this.url + `/persona-autorizadas/${autorizadaId}`, { data: body }, { headers: options });
   }
 
-    async putAut(id: string, data: any, token: string) {
+  async putAut(id: string, data: any, token: string) {
     console.log('Actualizando alumno:', id, data);
     const options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
@@ -243,16 +245,16 @@ const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate]
     return res.data.data;
   }
 
-  
+
   async postSalon(data: any, token: string) {
-    console.log(' datos enviados de Salones',data);
+    console.log(' datos enviados de Salones', data);
     let options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
     });
     return axios.post(this.url + '/salons', { data: data }, { headers: options });
   }
 
-    async putSalon(id: string, data: any, token: string) {
+  async putSalon(id: string, data: any, token: string) {
     console.log('Actualizando alumno:', id, data);
     const options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token

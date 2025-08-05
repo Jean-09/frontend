@@ -6,7 +6,6 @@ import { AlertController } from '@ionic/angular';
 import { IonModal } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 import { IonPopover } from '@ionic/angular';
-import { IonSearchbar } from '@ionic/angular/standalone';
 
 
 @Component({
@@ -20,6 +19,10 @@ export class AlumnosPage implements OnInit {
   @ViewChild('popover') popover!: IonPopover;
   isMenuOpen = false;
 
+inputNombreDocente = '';
+mostrarLista = false;
+
+  
   isEditing = false;
   alumnoEditId: string | null = null;
 
@@ -31,22 +34,33 @@ export class AlumnosPage implements OnInit {
     await this.getAlumnos();
     await this.getAutorizadas();
     await this.getdocentes();
+    this.filteredDocentes = [...this.docente];
 
+  }
+
+  filteredDocentes: any[] = [];  // Lista filtrada
+
+  // Filtra docentes al escribir
+  filterDocentes(event: any) {
+    const searchTerm = event.target.value.toLowerCase();
+    this.filteredDocentes = this.docente.filter(d =>
+      d.nombre.toLowerCase().includes(searchTerm)
+    );
   }
 
 
   buscador(query: string) {
-  const searchTerm = query?.trim() || '';
-  
-  this.api.GetDocent(searchTerm, this.token)
-    .then((res) => {
-      this.docente = res.data || [];
-    })
-    .catch((error) => {
-      console.error('Error al buscar docentes', error);
-      this.docente = []; // Limpiar resultados en caso de error
-    });
-}
+    const searchTerm = query?.trim() || '';
+
+    this.api.GetDocent(searchTerm, this.token)
+      .then((res) => {
+        this.docente = res.data || [];
+      })
+      .catch((error) => {
+        console.error('Error al buscar docentes', error);
+        this.docente = []; // Limpiar resultados en caso de error
+      });
+  }
 
 
   // Abre el menú desplegable

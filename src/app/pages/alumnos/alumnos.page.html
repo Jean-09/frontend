@@ -124,16 +124,16 @@
               <div class="row">
                 <ion-item class="form-item half-width">
                   <ion-label class="form-label">Personas Autorizadas</ion-label>
-                  <ion-select class="form-select" [(ngModel)]="nuevoAlumno.autorizadas" multiple interface="popover">
+                  <ion-select class="form-select" [(ngModel)]="nuevoAlumno.autorizadas" multiple interface="alert">
                     <ion-select-option *ngFor="let p of autorizadas" [value]="p.documentId">
                       {{ p.nombre }}</ion-select-option>
                   </ion-select>
                 </ion-item>
 
-                <ion-item class="form-item half-width">
+                <ion-item class="form-item half-width" > 
                   <ion-label class="form-label">Docente</ion-label>
-                  <ion-select class="form-select" [(ngModel)]="nuevoAlumno.docente" interface="popover">
-                    <ion-select-option *ngFor="let d of docente" [value]="d.documentId">
+                  <ion-select class="form-select" [(ngModel)]="nuevoAlumno.docente" interface="alert">
+                    <ion-select-option *ngFor="let d of docente" [value]="d.documentId" >
                       {{ d.nombre }}
                     </ion-select-option>
                   </ion-select>

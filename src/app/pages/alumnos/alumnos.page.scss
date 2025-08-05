@@ -523,3 +523,30 @@ ion-icon[name="create-outline"] {
   min-width: 80px; /* Ancho similar al botón */
   text-align: center;
 }
+
+.form-item {
+  --highlight-color-focused: #3880ff; // color de foco azul
+  --background: #fff;
+  --border-radius: 8px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.form-select {
+  padding: 8px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: 16px;
+  outline: none;
+  color: #ffffff;
+  --background: white;
+}
+
+

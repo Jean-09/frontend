@@ -26,7 +26,6 @@ export class DocentePage implements OnInit {
     await this.storage.create();
     await this.getToken();
     await this.getDocentes();
-
   }
 
   // Abre el menú desplegable
@@ -35,7 +34,7 @@ export class DocentePage implements OnInit {
     this.popover.event = event;
   }
 
-    openAddModal() {
+  openAddModal() {
     this.isEditing = false;
     this.docenteEditId = null;
     this.limpiarFormulario();
@@ -121,23 +120,23 @@ export class DocentePage implements OnInit {
     });
   }
 
- async toggleStatus(d: any) {
+  async toggleStatus(d: any) {
     try {
-        const nuevoEstado = !d.estatus;
-        
-        const res = await this.api.delDocente(d, nuevoEstado, this.token);
-        console.log('Estado cambiado:', res);
-        d.estatus = nuevoEstado;
-        
-        await this.getDocentes();
+      const nuevoEstado = !d.estatus;
+
+      const res = await this.api.delDocente(d, nuevoEstado, this.token);
+      console.log('Estado cambiado:', res);
+      d.estatus = nuevoEstado;
+
+      await this.getDocentes();
 
     } catch (error) {
-        console.error('Error al cambiar estado:', error);
-        await this.presentAlert('Error al actualizar el estado');
-        // Mantener el estado anterior si falla
-        d.estatus = !d.estatus;
+      console.error('Error al cambiar estado:', error);
+      await this.presentAlert('Error al actualizar el estado');
+      // Mantener el estado anterior si falla
+      d.estatus = !d.estatus;
     }
-}
+  }
 
   async logout() {
     await this.storage.remove('token');
@@ -148,7 +147,7 @@ export class DocentePage implements OnInit {
     if (!this.docenteEditId) return;
 
     try {
-       const data = {
+      const data = {
         nombre: this.nuevoDocente.nombre,
         apellido: this.nuevoDocente.apellido,
         estatus: this.nuevoDocente.estatus,
@@ -173,57 +172,86 @@ export class DocentePage implements OnInit {
     }
   }
 
-  async addDoce(nuevoDocenteParam?: any) {
-    const docente = nuevoDocenteParam ?? this.nuevoDocente;
+async addDoce(nuevoDocenteParam?: any) {
+  const docente = nuevoDocenteParam ?? this.nuevoDocente;
 
+  try {
+    // Validación de campos obligatorios
+    if (!docente.nombre || !docente.apellido || !docente.estatus || !docente.gmail) {
+      await this.presentAlert('Por favor, complete todos los datos obligatorios.');
+      return;
+    }
+
+    let userDocumentId: string | undefined;
+
+    // Registro del usuario
     try {
-      if (!docente.nombre || !docente.apellido || !docente.estatus) {
-        await this.presentAlert('Por favor, llena todos los datos.');
+      const user = {
+        username: docente.nombre,
+        email: docente.gmail,
+        password: docente.nombre // Usamos el nombre como contraseña temporal
+      };
+      
+      const userCreateRes = await this.api.postUser(user, this.token);
+      userDocumentId = userCreateRes.data.user?.documentId || userCreateRes.data.documentId;
+
+      if (!userDocumentId) {
+        console.error('No se pudo obtener el documentId del usuario:', userCreateRes.data);
+        await this.presentAlert('Error al registrar el usuario. No se obtuvo el ID de documento.');
         return;
       }
 
-      const data = {
-        nombre: docente.nombre,
-        apellido: docente.apellido,
-        estatus: docente.estatus,
-      };
-      console.log(data)
+      console.log('Usuario creado con documentId:', userDocumentId);
 
-      const createRes = await this.api.postDoce(data, this.token);
-      const docenteId = createRes.data.data.documentId;
+    } catch (userError) {
+      console.error('Error al crear el usuario:', userError);
+      await this.presentAlert('Error al registrar el usuario del docente. Por favor verifique los datos e intente nuevamente.');
+      return;
+    }
 
-      if (docente.foto) {
-        try {
-          const uploadRes = await this.api.uploadFileDoce(this.token, docente.foto);
-          const fileId = uploadRes.data[0].id;
+    // Creación del registro del docente
+    const data = {
+      nombre: docente.nombre,
+      apellido: docente.apellido,
+      estatus: docente.estatus,
+      user: userDocumentId,
+    };
 
-          await this.api.imagenDoce(this.token, docenteId, fileId);
+    const createRes = await this.api.postDoce(data, this.token);
+    const docenteId = createRes.data.data.documentId;
 
-
-          this.mostrarFormulario = false;
-          this.limpiarFormulario();
-          this.modal.dismiss();
-          this.getDocentes(undefined, true);
-
-
-        } catch (uploadError) {
-          console.error('Error subiendo o ligando foto:', uploadError);
-          await this.presentAlert('Error al subir o ligar la foto.');
-        }
-      } else {
-        if (!nuevoDocenteParam) await this.presentAlert('Debes subir una foto para continuar.');
+    // Manejo de la foto si existe
+    if (docente.foto) {
+      try {
+        const uploadRes = await this.api.uploadFileDoce(this.token, docente.foto);
+        const fileId = uploadRes.data[0].id;
+        await this.api.imagenDoce(this.token, docenteId, fileId);
+      } catch (uploadError) {
+        console.error('Error subiendo foto:', uploadError);
+        await this.presentAlert('Advertencia: La foto no pudo ser subida correctamente.');
       }
+    } else if (!nuevoDocenteParam) {
+      await this.presentAlert('Advertencia: No se ha subido ninguna foto para el docente.');
+    }
 
-      this.mostrarFormulario = false;
-      this.limpiarFormulario();
-      this.modal.dismiss();
-      this.getDocentes();
+    // Limpieza y cierre
+    this.mostrarFormulario = false;
+    this.limpiarFormulario();
+    this.modal.dismiss();
+    await this.getDocentes(undefined, true);
 
-    } catch (error) {
-      console.error('Error al agregar alumno:', error);
-      if (!nuevoDocenteParam) await this.presentAlert('Ocurrió un error al agregar el alumno.');
+    // Mensaje de éxito
+    if (!nuevoDocenteParam) {
+      await this.presentAlert('Docente registrado exitosamente. Las credenciales han sido enviadas al correo proporcionado.');
+    }
+
+  } catch (error) {
+    console.error('Error en el proceso completo:', error);
+    if (!nuevoDocenteParam) {
+      await this.presentAlert('Ocurrió un error inesperado durante el registro. Por favor intente nuevamente.');
     }
   }
+}
 
   async addDoceBatch(docentesArray: any[], concurrencyLimit = 3) {
     let index = 0;
@@ -263,7 +291,7 @@ export class DocentePage implements OnInit {
     await alert.present();
   }
 
-    seleccionarFoto(event: any) {
+  seleccionarFoto(event: any) {
     const archivo = event.target.files[0];
     this.nuevoDocente.foto = archivo;
 
@@ -278,7 +306,7 @@ export class DocentePage implements OnInit {
     }
   }
 
-    verDetallesDoce(docente: any) {
+  verDetallesDoce(docente: any) {
     console.log('Docente', docente)
     this.route.navigate(['/detalles-docentes'], {
       state: {
