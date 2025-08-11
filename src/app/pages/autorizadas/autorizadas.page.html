@@ -53,9 +53,9 @@
         </ion-item>
 
         <ion-button routerLink="/docente" class="menu-button">
-        <ion-icon slot="start" name="school-outline" style="color: black;"></ion-icon>
-        <span class="button-text" style="color: black;">Docentes</span>
-      </ion-button>
+          <ion-icon slot="start" name="school-outline" style="color: black;"></ion-icon>
+          <span class="button-text" style="color: black;">Docentes</span>
+        </ion-button>
         <ion-item button routerLink="/salon">
           <ion-icon style="color: black;" name="business-outline" slot="start"></ion-icon>
           <ion-label>Salones</ion-label>
@@ -70,13 +70,14 @@
 </ion-popover>
 
 <ion-content [fullscreen]="true" style="--background: white;">
-    <ion-modal #modal class="custom-modal">
+  <ion-modal #modal class="custom-modal">
     <ng-template>
       <ion-content class="modal-content">
         <ion-toolbar class="modal-toolbar">
           <ion-card class="modal-card">
             <ion-card-header class="modal-header">
-              <ion-card-title class="modal-title">{{ isEditing ? 'Editar Persona Autorizada' : 'Nueva Persona Autorizada' }}</ion-card-title>
+              <ion-card-title class="modal-title">{{ isEditing ? 'Editar Persona Autorizada' : 'Nueva Persona
+                Autorizada' }}</ion-card-title>
               <ion-button class="modal-close-btn" fill="clear" (click)="modal.dismiss()">
                 <ion-icon name="close" slot="icon-only"></ion-icon>
               </ion-button>
@@ -91,7 +92,8 @@
 
                 <ion-item class="form-item half-width">
                   <ion-label position="floating" class="form-label">Apellido</ion-label>
-                  <ion-input class="form-input" [(ngModel)]="nuevoAutorizado.apellido" placeholder="Apellido"></ion-input>
+                  <ion-input class="form-input" [(ngModel)]="nuevoAutorizado.apellido"
+                    placeholder="Apellido"></ion-input>
                 </ion-item>
               </div>
 
@@ -113,12 +115,14 @@
               <div class="row">
                 <ion-item class="form-item half-width">
                   <ion-label position="floating" class="form-label">Telefono</ion-label>
-                  <ion-input type="number" class="form-input" [(ngModel)]="nuevoAutorizado.telefono" placeholder="Telefono"></ion-input>
+                  <ion-input type="number" class="form-input" [(ngModel)]="nuevoAutorizado.telefono"
+                    placeholder="Telefono"></ion-input>
                 </ion-item>
 
                 <ion-item class="form-item half-width">
                   <ion-label position="floating" class="form-label">Dirección</ion-label>
-                  <ion-input  class="form-input" [(ngModel)]="nuevoAutorizado.direccion" placeholder="Dirección"></ion-input>
+                  <ion-input class="form-input" [(ngModel)]="nuevoAutorizado.direccion"
+                    placeholder="Dirección"></ion-input>
                 </ion-item>
               </div>
 
@@ -179,6 +183,9 @@
       </ion-card-header>
 
       <ion-card-content class="card-content">
+        <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterAutorizadas()"
+          placeholder="Buscar por número o docente" debounce="300" class="custom-searchbar" style="--background: white; --color:black; --border-radius: 10px;">
+        </ion-searchbar>
         <ion-grid class="student-grid">
           <!-- Encabezados -->
           <ion-row class="header-row">
@@ -194,7 +201,7 @@
           <!-- Contenedor con scroll -->
           <div class="scroll-container">
             <!-- Estudiantes -->
-            <ion-row *ngFor="let a of autorizadas" class="data-row">
+            <ion-row *ngFor="let a of filterAutorizadas()" class="data-row">
               <ion-col size="1">
                 <ion-avatar (click)="verDetallesAut(a)" *ngIf="a.foto && a.foto?.url" class="avatar-pequeno">
                   <img [src]="'http://localhost:1337' + a.foto.url" alt="Foto de perfil">

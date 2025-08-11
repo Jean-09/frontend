@@ -85,6 +85,28 @@ export class AutorizadasPage implements OnInit {
     }
   }
 
+  searchTerm: string = '';
+
+  filterAutorizadas() {
+  if (!this.searchTerm) {
+    return this.autorizadas;
+  }
+
+  const terms = this.searchTerm.toLowerCase().split(' ').filter(t => t);
+
+  return this.autorizadas.filter(a => {
+    const nombre = a.nombre?.toLowerCase() || '';
+    const apellidos = a.apellidos?.toLowerCase() || '';
+    const fullName = `${nombre} ${apellidos}`;
+
+    return terms.every(term => 
+      nombre.includes(term) || 
+      apellidos.includes(term) ||
+      fullName.includes(term)
+    );
+  });
+}
+
   getAutorizadas(event?: any, reset: boolean = false) {
     if (this.cargando) {
       if (event) event.target.complete();
@@ -184,7 +206,7 @@ export class AutorizadasPage implements OnInit {
         telefono: autorizada.telefono,
         Domicilio: autorizada.direccion,
         estatus: autorizada.estatus,
-        user: autorizada.user,
+        user: autorizada.nombre,
       };
 
       const createRes = await this.api.postAut(data, this.token);

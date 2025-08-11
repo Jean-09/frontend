@@ -124,21 +124,23 @@
 
 @media (max-width: 768px) {
   .header {
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row; /* Mantenemos en fila (no columna) */
+    flex-wrap: wrap; /* Permite ajuste si el espacio es pequeño */
+    align-items: center;
+    gap: 10px;
   }
-  
-  .text-zone h1 {
-    font-size: 24px;
+
+  .menu {
+    margin-left: auto; /* Empuja el botón a la derecha si hay espacio */
   }
-  
-  .icon-zone ion-icon {
-    font-size: 60px;
-    padding: 20px;
-  }
-  
-  .btn-outline, .setars {
-    padding: 8px 16px;
+
+  /* Si la pantalla es muy pequeña (ej. 480px), ajustamos el botón */
+  @media (max-width: 480px) {
+    .menu {
+      width: 100%;
+      justify-content: flex-end; /* Alinea el botón a la derecha */
+      margin-top: 5px; /* Pequeño espacio si baja */
+    }
   }
 }
 

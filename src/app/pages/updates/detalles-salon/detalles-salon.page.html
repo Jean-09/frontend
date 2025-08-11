@@ -104,41 +104,72 @@
 
   <section class="inferior-section">
 
-    <!-- Docente encargado -->
-    <div class="docente-wrapper">
-      <h3 style="color: black;">Docente Encargado</h3>
-      <ion-card *ngIf="salon.docente" class="info-card">
-        <ion-card-header class="docente-header">
-          <div class="photo-placeholder pequeño">
-            <img [src]="'http://localhost:1337' + salon.docente.foto[0].url" alt="Foto del docente">
-          </div>
-          <div class="info-texto">
-            <p class="etiqueta">Nombre</p>
-            <ion-card-title>{{ salon.docente.nombre }} {{ salon.docente.apellido }}</ion-card-title>
-          </div>
-        </ion-card-header>
-      </ion-card>
-    </div>
-
-    <!-- Alumnos -->
-    <div class="autorizadas-wrapper">
-      <h3 style="color: black;">Alumnos</h3>
-      <div class="autorizadas-grid">
-        <ion-card *ngFor="let a of salon.alumnos" class="info-card">
-          <ion-card-header>
-            <div class="photo-placeholder pequeño">
-              <img [src]="'http://localhost:1337' + a.foto[0].url" alt="Foto del alumno">
-            </div>
-            <div class="info-texto">
-              <p class="etiqueta">Nombre</p>
-              <ion-card-title>{{ a.nombre }} {{ a.apellido }}</ion-card-title>
-              <p class="etiqueta">Usuario</p>
-              <p class="telefono">{{ a.user }}</p>
-            </div>
-          </ion-card-header>
-        </ion-card>
+<!-- Docente encargado -->
+<div class="docente-wrapper">
+  <h3 style="color: black;">Docente Encargado</h3>
+  
+  <ion-card *ngIf="salon?.docente; else noDocente" class="info-card">
+    <ion-card-header class="docente-header">
+      <div class="photo-placeholder pequeño">
+        <img *ngIf="salon.docente.foto && salon.docente.foto[0]?.url; else noFotoDocente" 
+             [src]="'http://localhost:1337' + salon.docente.foto[0].url" 
+             alt="Foto del docente"
+             onerror="this.parentElement.innerHTML='<div class=\'no-image\'>Sin imagen</div>'">
+        <ng-template #noFotoDocente>
+          <div class="no-image">Sin imagen</div>
+        </ng-template>
       </div>
-    </div>
+      <div class="info-texto">
+        <p class="etiqueta">Nombre</p>
+        <ion-card-title>
+          {{ salon.docente.nombre || 'No especificado' }} 
+          {{ salon.docente.apellido || '' }}
+        </ion-card-title>
+      </div>
+    </ion-card-header>
+  </ion-card>
 
+  <ng-template #noDocente>
+    <div class="no-data">
+      <ion-icon name="school-outline"></ion-icon>
+      No hay docente asignado
+    </div>
+  </ng-template>
+</div>
+
+<!-- Alumnos -->
+<div class="autorizadas-wrapper">
+  <h3 style="color: black;">Alumnos</h3>
+  
+  <div *ngIf="salon?.alumnos?.length > 0; else noAlumnos" class="autorizadas-grid">
+    <ion-card *ngFor="let a of salon.alumnos" class="info-card">
+      <ion-card-header>
+        <div class="photo-placeholder pequeño">
+          <img *ngIf="a.foto && a.foto[0]?.url; else noFotoAlumno" 
+               [src]="'http://localhost:1337' + a.foto[0].url" 
+               alt="Foto del alumno"
+               onerror="this.parentElement.innerHTML='<div class=\'no-image\'>Sin imagen</div>'">
+          <ng-template #noFotoAlumno>
+            <div class="no-image">Sin imagen</div>
+          </ng-template>
+        </div>
+        <div class="info-texto">
+          <p class="etiqueta">Nombre</p>
+          <ion-card-title>
+            {{ a.nombre || 'No especificado' }} 
+            {{ a.apellido || '' }}
+          </ion-card-title>
+        </div>
+      </ion-card-header>
+    </ion-card>
+  </div>
+
+  <ng-template #noAlumnos>
+    <div class="no-data">
+      <ion-icon name="people-outline"></ion-icon>
+      No hay alumnos registrados
+    </div>
+  </ng-template>
+</div>
   </section>
 </ion-content>

@@ -152,6 +152,13 @@
       </ion-card-header>
 
       <ion-card-content class="card-content">
+                      <ion-searchbar 
+        [(ngModel)]="searchTerm"
+        (ionInput)="filterDocentes()"
+        placeholder="Buscar por número o docente"
+        debounce="300"
+        class="custom-searchbar" style="--background: white; --color:black; --border-radius: 10px;">
+      </ion-searchbar>
         <ion-grid class="student-grid">
           <!-- Encabezados -->
           <ion-row class="header-row">
@@ -166,8 +173,7 @@
           <!-- Contenedor con scroll -->
           <div class="scroll-container">
             <!-- Estudiantes -->
-            <ion-row *ngFor="let d of docentes" class="data-row">
-              <!-- (click)="verDetallesAlum(d)" -->
+            <ion-row *ngFor="let d of filterDocentes()" class="data-row">
               <ion-col size="2" >
                 <ion-avatar (click)="verDetallesDoce(d)" *ngIf="d.foto && d.foto[0]?.url" class="avatar-pequeno">
                   <img [src]="'http://localhost:1337' + d.foto[0].url" alt="Foto de perfil">

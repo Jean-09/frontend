@@ -73,7 +73,7 @@
 
 
 <ion-content [fullscreen]="true" style=" --background: white;">
-  <ion-modal #modal class="custom-modal">
+  <ion-modal #modal class="custom-modal modal">
     <ng-template>
       <ion-content class="modal-content">
         <ion-toolbar class="modal-toolbar">
@@ -89,41 +89,124 @@
               <div class="row">
                 <ion-item class="form-item half-width">
                   <ion-label position="floating" class="form-label">Numero de salón</ion-label>
-                  <ion-input type="number" class="form-input" [(ngModel)]="nuevoSalon.Numero" placeholder="N° salon"></ion-input>
+                  <ion-input type="number" class="form-input" [(ngModel)]="nuevoSalon.Numero"
+                    placeholder="N° salon "></ion-input>
                 </ion-item>
 
               </div>
-              <div class="row">
-                  <ion-item class="form-item half-width">
-                  <ion-label class="form-label">Docente</ion-label>
-                  <ion-select class="form-select" [(ngModel)]="nuevoSalon.docente" interface="popover">
-                    <ion-select-option *ngFor="let d of docente" [value]="d.documentId">
-                      {{ d.nombre }}
-                    </ion-select-option>
-                  </ion-select>
+              <div class="row " style="position: relative;">
+                <ion-item class="form-item" lines="none" style="width: 100%; --background: white; ">
+                  <ion-label position="floating" style="color: black;">Docente</ion-label>
+                  <ion-input [(ngModel)]="busquedaDocente" (click)="mostrarListaDocentes = !mostrarListaDocentes"
+                    (ionInput)="filtrarDocentes()" placeholder="Seleccione o busque un docente" readonly
+                    style="--background: white; color: black;">
+
+                  </ion-input>
+
+                  <ion-button slot="end" fill="clear" (click)="abrirModalDocente()">
+                    <ion-icon slot="icon-only" name="add" style="color: black;"></ion-icon>
+                  </ion-button>
+
                 </ion-item>
+
+                <!-- Lista desplegable con contenedor scrollable -->
+                <div *ngIf="mostrarListaDocentes" class="dropdown-container">
+                  <ion-list class="dropdown-list-fixed">
+                    <!-- Barra de búsqueda fija -->
+                    <div class="sticky-searchbar">
+                      <ion-searchbar [(ngModel)]="busquedaDocente" (ionInput)="filtrarDocentes()"
+                        placeholder="Buscar docente..." debounce="300" class="black-searchbarblack-searchbar">
+                      </ion-searchbar>
+                    </div>
+
+                    <!-- Contenido scrollable -->
+                    <div class="scrollable-content">
+                      <ion-item *ngFor="let d of docentesFiltrados" button
+                        (click)="seleccionarDocente(d); mostrarListaDocentes = false" detail="false" class="black-item">
+                        {{ d.nombre }} {{ d.apellido || '' }}
+                      </ion-item>
+                    </div>
+                  </ion-list>
+                </div>
 
               </div>
 
               <ion-item class="form-item">
                 <ion-label class="form-label">Estado</ion-label>
                 <ion-select class="form-select" [(ngModel)]="nuevoSalon.estado">
+                  <ion-select-option [value]="true">En servicio</ion-select-option>
+                  <ion-select-option [value]="false">Fuera de servicio</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <ion-button class="submit-btn" expand="block" (click)="isEditing ? updateSalon() : addSalon()">
+                {{ isEditing ? 'Actualizar' : 'Guardar' }}
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        </ion-toolbar>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal Secundario: Agregar Docente -->
+
+  <ion-modal #modalDocente class="custom-modal secundario ">
+    <ng-template>
+      <ion-content class="modal-content">
+        <ion-toolbar class="modal-toolbar">
+          <ion-card class="modal-card">
+            <ion-card-header class="modal-header">
+              <ion-card-title class="modal-title">Nuevo Docente</ion-card-title>
+              <ion-button class="modal-close-btn" fill="clear" (click)="modalDocente.dismiss()">
+                <ion-icon name="close" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-card-header>
+
+            <ion-card-content class="modal-body">
+              <div class="row">
+                <ion-item class="form-item half-width">
+                  <ion-label position="floating" class="form-label">Nombre</ion-label>
+                  <ion-input class="form-input" [(ngModel)]="nuevoDocente.nombre" placeholder="Nombre"></ion-input>
+                </ion-item>
+
+                <ion-item class="form-item half-width">
+                  <ion-label position="floating" class="form-label">Apellido</ion-label>
+                  <ion-input class="form-input" [(ngModel)]="nuevoDocente.apellido" placeholder="Apellido"></ion-input>
+                </ion-item>
+              </div>
+
+              <div class="row photo-section">
+                <div class="photo-upload-container">
+                  <input type="file" id="fileInputDocente" (change)="seleccionarFotoDocente($event)" accept="image/*"
+                    style="display: none;">
+                  <label for="fileInputDocente" class="photo-upload-label">
+                    <ion-icon name="camera" class="photo-icon"></ion-icon>
+                    <span>Subir Foto</span>
+                  </label>
+                </div>
+
+                <div class="photo-preview" *ngIf="previewImageDocente">
+                  <img [src]="previewImageDocente" alt="Previsualización" class="preview-image" />
+                </div>
+              </div>
+
+              <ion-item class="form-item">
+                <ion-label class="form-label">Estado</ion-label>
+                <ion-select class="form-select" [(ngModel)]="nuevoDocente.estatus">
                   <ion-select-option [value]="true">Activo</ion-select-option>
                   <ion-select-option [value]="false">Inactivo</ion-select-option>
                 </ion-select>
               </ion-item>
 
-              <div class="row">
-                <ion-item class="form-item half-width">
-                  <ion-label class="form-label">Alumnos</ion-label>
-                  <ion-select class="form-select" [(ngModel)]="nuevoSalon.alumnos" multiple interface="popover">
-                    <ion-select-option *ngFor="let a of alumnos" [value]="a.documentId">
-                      {{ a.nombre }}</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </div>
-              <ion-button class="submit-btn" expand="block" (click)="isEditing ? updateSalon() : addSalon()">
-                {{ isEditing ? 'Actualizar' : 'Guardar' }}
+              <ion-item class="form-item">
+                <ion-label position="floating" class="form-label">Correo electronico</ion-label>
+                <ion-input type="email" class="form-input" [(ngModel)]="nuevoDocente.gmail"
+                  placeholder="Email"></ion-input>
+              </ion-item>
+
+              <ion-button class="submit-btn" expand="block" (click)="addDoce()">
+                Guardar
               </ion-button>
             </ion-card-content>
           </ion-card>
@@ -140,7 +223,7 @@
     <ion-card class="custom-card">
       <ion-card-header class="card-header">
         <ion-card-title class="card-title">
-          <span>Gestión de Docentes</span>
+          <span>Gestión de Salones</span>
           <span class="button-space">
             <ion-button style="--background: rgba(240, 240, 240, 0.521); color: black; --border-radius: 8px;"
               (click)="openAddModal()">
@@ -152,6 +235,11 @@
       </ion-card-header>
 
       <ion-card-content class="card-content">
+        <!-- Añadimos el buscador aquí -->
+        <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterSalones()" placeholder="Buscar por número o docente"
+          debounce="300" class="custom-searchbar" style="--background: white; --color:black; --border-radius: 10px;">
+        </ion-searchbar>
+
         <ion-grid class="student-grid">
           <!-- Encabezados -->
           <ion-row class="header-row">
@@ -164,12 +252,13 @@
 
           <!-- Contenedor con scroll -->
           <div class="scroll-container">
-            <!-- Estudiantes -->
-            <ion-row *ngFor="let s of salon" class="data-row">
-
+            <!-- Mostramos los salones filtrados -->
+            <ion-row *ngFor="let s of filterSalones()" class="data-row">
               <ion-col size="1.5"></ion-col>
               <ion-col size="3" (click)="verDetallesSalon(s)">{{s.Numero}}</ion-col>
-              <ion-col size="3" (click)="verDetallesSalon(s)">{{s.docente.nombre | titlecase}}</ion-col>
+              <ion-col size="3" (click)="verDetallesSalon(s)">
+                {{s.docente ? (s.docente.nombre | titlecase) : 'No hay docente encargado'}}
+              </ion-col>
 
               <!-- Estado clickeable -->
               <ion-col size="3" (click)="toggleStatus(s);">

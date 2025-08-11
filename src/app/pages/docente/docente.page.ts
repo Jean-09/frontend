@@ -78,6 +78,29 @@ export class DocentePage implements OnInit {
     }
   }
 
+    // En tu componente.ts
+  searchTerm: string = '';
+
+  filterDocentes() {
+  if (!this.searchTerm) {
+    return this.docentes;
+  }
+
+  const terms = this.searchTerm.toLowerCase().split(' ').filter(t => t);
+
+  return this.docentes.filter(docentes => {
+    const nombre = docentes.nombre?.toLowerCase() || '';
+    const apellido = docentes.apellido?.toLowerCase() || '';
+    const fullName = `${nombre} ${apellido}`;
+
+    return terms.every(term => 
+      nombre.includes(term) || 
+      apellido.includes(term) ||
+      fullName.includes(term)
+    );
+  });
+}
+
   getDocentes(event?: any, reset: boolean = false) {
     if (this.cargando) {
       if (event) event.target.complete();

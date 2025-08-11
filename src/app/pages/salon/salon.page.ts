@@ -16,10 +16,13 @@ export class SalonPage implements OnInit {
 
   @ViewChild('modal', { static: false }) modal!: IonModal;
   @ViewChild('popover') popover!: IonPopover;
+  @ViewChild('modalDocente') modalDocente!: IonModal;
   isMenuOpen = false;
 
   isEditing = false;
   salonEditId: string | null = null;
+
+  previewImageDocente: string | ArrayBuffer | null = null;
 
   constructor(private api: ApiService, private storage: Storage, private route: Router, private alertController: AlertController) { }
 
@@ -61,6 +64,10 @@ export class SalonPage implements OnInit {
     this.modal.present();
   }
 
+  abrirModalDocente() {
+    this.modalDocente.present();
+  }
+
   salon: any[] = [];
   token = '';
   paginaActual = 1;
@@ -77,14 +84,52 @@ export class SalonPage implements OnInit {
   }
 
   docente: any[] = [];
+  // Agrega estas variables junto a las demás
+  busquedaDocente: string = '';
+  mostrarListaDocentes: boolean = false;
+  docentesFiltrados: any[] = [];
 
   getdocentes() {
     this.api.getDoce(this.token).then((res) => {
       this.docente = res;
+      this.docentesFiltrados = [...this.docente]; // Inicializa con todos los docentes
       console.log(this.docente);
     }).catch((error) => {
       console.log(error);
-    })
+    });
+  }
+
+  filtrarDocentes() {
+    if (!this.busquedaDocente) {
+      this.docentesFiltrados = [...this.docente]; // Muestra todos si no hay búsqueda
+      return;
+    }
+    this.docentesFiltrados = this.docente.filter(d =>
+      d.nombre.toLowerCase().includes(this.busquedaDocente.toLowerCase()) ||
+      d.apellido?.toLowerCase().includes(this.busquedaDocente.toLowerCase())
+    );
+  }
+
+  seleccionarDocente(docente: any) {
+    this.busquedaDocente = `${docente.nombre} ${docente.apellido || ''}`.trim();
+    this.nuevoSalon.docente = [docente.documentId]; // Asigna el ID del docente
+    this.mostrarListaDocentes = false; // Oculta la lista
+  }
+
+  seleccionarFotoDocente(event: any) {
+    const archivo = event.target.files[0];
+    this.nuevoDocente.foto = archivo;
+    console.log(archivo)
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewImageDocente = reader.result;
+    };
+    if (archivo) {
+      reader.readAsDataURL(archivo);
+    } else {
+      this.previewImage = null;
+    }
   }
 
   alumnos: any[] = [];
@@ -92,11 +137,12 @@ export class SalonPage implements OnInit {
   getAlumnos() {
     this.api.getAlum(this.token).then((res) => {
       this.alumnos = res;
-      console.log(this.alumnos);
     }).catch((error) => {
       console.log(error);
     })
   }
+
+  
 
   getSalon(event?: any, reset: boolean = false) {
     if (this.cargando) {
@@ -131,7 +177,7 @@ export class SalonPage implements OnInit {
 
       this.paginaActual++;
       this.cargando = false;
-      console.log(this.salon)
+      console.log('estos son los salones', this.salon)
 
     }).catch((error) => {
       console.log(error);
@@ -164,13 +210,28 @@ export class SalonPage implements OnInit {
     }
   }
 
+  // En tu componente.ts
+searchTerm: string = '';
+
+// Esta función filtra los salones según el término de búsqueda
+filterSalones() {
+  if (!this.searchTerm) {
+    return this.salon;  // Si no hay búsqueda, devuelve todos
+  }
+
+  const term = this.searchTerm.toLowerCase();
+  return this.salon.filter(s => 
+    s.Numero.toLowerCase().includes(term) || 
+    (s.docente && s.docente.nombre.toLowerCase().includes(term)))
+}
+
 
   async addSalon(nuevoSalonParam?: any) {
     const salon = nuevoSalonParam ?? this.nuevoSalon;
-    console.log(salon)
+    console.log( 'estos son los salones', salon)
 
     try {
-      if (!salon.Numero || !salon.docente || !salon.estado || !salon.alumnos) {
+      if (!salon.Numero || !salon.docente || !salon.estado) {
         await this.presentAlert('Por favor, llena todos los datos.');
         return;
       }
@@ -179,13 +240,13 @@ export class SalonPage implements OnInit {
         Numero: salon.Numero,
         estado: true,
         docente: salon.docente,
-        alumnos: salon.alumnos,
       };
 
       await this.api.postSalon(data, this.token);
 
       this.mostrarFormulario = false;
       this.limpiarFormulario();
+      this.busquedaDocente = '';
       this.modal.dismiss();
       await this.getSalon(undefined, true);
 
@@ -193,6 +254,98 @@ export class SalonPage implements OnInit {
       console.error('Error al agregar el docente:', error);
       if (!nuevoSalonParam) {
         await this.presentAlert('Ocurrió un error al agregar el docente.');
+      }
+    }
+  }
+
+  async addDoce(nuevoDocenteParam?: any) {
+    const docente = nuevoDocenteParam ?? this.nuevoDocente;
+
+    try {
+      // Validación de campos obligatorios
+      if (!docente.nombre || !docente.apellido || !docente.estatus || !docente.gmail) {
+        await this.presentAlert('Por favor, complete todos los datos obligatorios.');
+        return;
+      }
+
+      let userDocumentId: string | undefined;
+
+      // Registro del usuario
+      try {
+        const user = {
+          username: docente.nombre,
+          email: docente.gmail,
+          password: docente.nombre
+        };
+
+        const userCreateRes = await this.api.postUser(user, this.token);
+        userDocumentId = userCreateRes.data.user?.documentId || userCreateRes.data.documentId;
+
+        if (!userDocumentId) {
+          console.error('No se pudo obtener el documentId del usuario:', userCreateRes.data);
+          await this.presentAlert('Error al registrar el usuario. No se obtuvo el ID de documento.');
+          return;
+        }
+      } catch (userError) {
+        console.error('Error al crear el usuario:', userError);
+        await this.presentAlert('Error al registrar el usuario del docente. Por favor verifique los datos e intente nuevamente.');
+        return;
+      }
+
+      // Creación del registro del docente
+      const data = {
+        nombre: docente.nombre,
+        apellido: docente.apellido,
+        estatus: docente.estatus,
+        user: userDocumentId,
+      };
+
+      const createRes = await this.api.postDoce(data, this.token);
+      const docenteId = createRes.data.data.documentId;
+
+      // Manejo de la foto si existe
+      if (docente.foto) {
+        try {
+          const uploadRes = await this.api.uploadFileDoce(this.token, docente.foto);
+          const fileId = uploadRes.data[0].id;
+          await this.api.imagenDoce(this.token, docenteId, fileId);
+        } catch (uploadError) {
+          console.error('Error subiendo foto:', uploadError);
+        }
+      }
+
+      // Dentro de addDoce(), después de crear el docente:
+      const docenteCreado = {
+        documentId: docenteId,
+        nombre: docente.nombre,
+        apellido: docente.apellido
+      };
+
+      // 1. Asigna al formulario
+      this.nuevoSalon.docente = [docenteId];
+
+      // 2. Actualiza la lista visual
+      this.docentesFiltrados = [docenteCreado, ...this.docentesFiltrados];
+
+      // 3. Cierra solo el modal de docente (mantén abierto el de salón)
+      this.modalDocente.dismiss();
+
+      // Limpieza y cierre
+      this.mostrarFormulario = false;
+      this.limpiarFormulario();
+      
+      this.modalDocente.dismiss();
+      await this.getdocentes();
+
+      // Mensaje de éxito
+      if (!nuevoDocenteParam) {
+        await this.presentAlert('Docente registrado exitosamente. Las credenciales han sido enviadas al correo proporcionado.');
+      }
+
+    } catch (error) {
+      console.error('Error en el proceso completo:', error);
+      if (!nuevoDocenteParam) {
+        await this.presentAlert('Ocurrió un error inesperado durante el registro. Por favor intente nuevamente.');
       }
     }
   }
@@ -217,8 +370,7 @@ export class SalonPage implements OnInit {
     this.nuevoSalon = {
       Numero: '',
       estado: true,
-      docente: [],
-      alumnos: [],
+      docente: []
     };
   }
 
@@ -227,8 +379,14 @@ export class SalonPage implements OnInit {
   nuevoSalon: any = {
     Numero: '',
     estado: true,
-    docente: [],
-    alumnos: [],
+    docente: []
+  };
+
+  nuevoDocente: any = {
+    nombre: '',
+    apellido: '',
+    estatus: true,
+    foto: null
   };
 
   async presentAlert(message: string) {

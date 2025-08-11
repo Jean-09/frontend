@@ -42,26 +42,50 @@ export class ApiService {
   }
 
   // CRUD de alumnos
-  async getAlum(token: string, pagina: number = 1, porPagina: number = 20) {
+  async getAlum(token: string, pagina: number = 1, porPagina: number = 15) {
     console.log(token);
     let options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
     });
 
     const start = (pagina - 1) * porPagina;
-    const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate][0]=foto&populate[persona_autorizadas][populate][0]=foto&populate[llegada][populate][docente][populate]=foto&&populate[llegada][populate][alumno][populate]=foto&populate[llegada][populate][persona_autorizada][populate]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+    const url = `${this.url}/alumnos?populate[foto]=true&populate[docente][populate][0]=foto&populate[persona_autorizadas][populate][0]=foto&populate[llegada][populate][docente][populate]=foto&&populate[llegada][populate][alumno][populate]=foto&populate[llegada][populate][persona_autorizada][populate]=foto&populate[salon][populate][docente][populate]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
+    return res.data.data;
+  }  
+  async getAllAlum(token: string) {
+    console.log(token);
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+    const res = await axios.get(this.url+ '/alumnos?pagination[limit]=-1&populate[foto]=true&pagination[limit]=-1&populate=*populate[docente][populate][0]=foto&populate[persona_autorizadas][populate][0]=foto&populate[llegada][populate][docente][populate]=foto&&populate[llegada][populate][alumno][populate]=foto&populate[llegada][populate][persona_autorizada][populate]=foto&populate[salon][populate][docente][populate]=foto' , { headers: options });
     return res.data.data;
   }
 
 
-  async postAlum(data: any, token: string) {
-    console.log(data);
-    let options = new AxiosHeaders({
-      'Authorization': 'Bearer ' + token
-    });
-    return axios.post(this.url + '/alumnos', { data: data }, { headers: options });
+async postAlum(data: any, token: string) {
+  const options = {
+    headers: { 'Authorization': `Bearer ${token}` }
+  };
+  console.log('este es lo que llega', data)
+
+  try {
+    if (data.salon) {
+      console.log(data)
+      const response = await axios.get(`${this.url}/salons/${data.salon}?populate=docente`, options);
+      const docenteId = response.data.data.docente?.documentId;
+
+      if (docenteId) {
+        data.docente = docenteId;
+      }
+    }
+    return await axios.post(`${this.url}/alumnos`, { data }, options);
+
+  } catch (error) {
+    console.error('Error al crear alumno:', error);
+    throw error;
   }
+}
 
   // subir imagen si el alumno creado tiene
   uploadFile(token: string, file: File) {
@@ -80,15 +104,21 @@ export class ApiService {
   }
 
 
-  // Update datos alumno
-  async putAlum(id: string, data: any, token: string) {
-    console.log('Actualizando alumno:', id, data);
-    const options = new AxiosHeaders({
-      'Authorization': 'Bearer ' + token
-    });
+ // Agrega este método para obtener información de salón con docente
+async getSalonbyid(salonId: string, token: string) {
+  const options = new AxiosHeaders({
+    'Authorization': 'Bearer ' + token
+  });
+  return axios.get(`${this.url}/salons/${salonId}?populate=docente`, { headers: options });
+}
 
-    return axios.put(`${this.url}/alumnos/${id}`, { data: data }, { headers: options });
-  }
+// Método actualizado para actualizar alumno
+async putAlum(id: string, data: any, token: string) {
+  const options = new AxiosHeaders({
+    'Authorization': 'Bearer ' + token
+  });
+  return axios.put(`${this.url}/alumnos/${id}`, { data }, { headers: options });
+}
 
   // Delete alumnos
   delAlumno(a: any, datosActualizados: any, token: string) {
@@ -108,7 +138,7 @@ export class ApiService {
     });
 
     const start = (pagina - 1) * porPagina;
-    const url = `${this.url}/docentes?populate[foto]=true&populate[alumnos][populate][0]=foto&populate[user][populate]=*&pagination[limit]=${porPagina}&pagination[start]=${start}`;
+    const url = `${this.url}/docentes?populate[foto]=true&populate[alumnos][populate][0]=foto&populate[user][populate]=*&populate[salon][populate]=*&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
   }
@@ -198,7 +228,6 @@ export class ApiService {
     return axios.post(this.url + '/upload/', formData, { headers: options });
   }
 
-  // subir imagen al alumno (foto debe ser array)
   imagenAut(token: string, autorizadaId: string, fileId: number) {
     console.log('Id del docente a ligar', autorizadaId);
     let options = new AxiosHeaders({ 'Authorization': 'Bearer ' + token });
