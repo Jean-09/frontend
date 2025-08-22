@@ -25,6 +25,13 @@ export class AlumnosPage implements OnInit {
 
   inputNombreDocente = '';
   mostrarLista = false;
+  busquedaSalon: string = '';
+  busquedaAutorizada: string = '';
+  salonesFiltrados: any[] = [];
+  autorizadasFiltrados: any[] = [];
+  mostrarListaSalon: boolean = false;
+  mostrarListaAutorizada: boolean = false;
+
 
 
   isEditing = false;
@@ -72,6 +79,41 @@ export class AlumnosPage implements OnInit {
   openMenu(event: Event) {
     this.isMenuOpen = true;
     this.popover.event = event;
+  }
+
+  filtrarSalones() {
+    if (!this.busquedaSalon) {
+      this.salonesFiltrados = [...this.salon]; // Muestra todos si no hay búsqueda
+      return;
+    }
+
+    this.salonesFiltrados = this.docente.filter(s =>
+      s.nombre.toLowerCase().includes(this.busquedaSalon.toLowerCase()) ||
+      s.apellido?.toLowerCase().includes(this.busquedaSalon.toLowerCase())
+    );
+  }
+
+  filtrarAutorizada() {
+    if (!this.busquedaAutorizada) {
+      this.autorizadasFiltrados = [...this.autorizadas]; // Muestra todos si no hay búsqueda
+      return;
+    }
+    this.autorizadasFiltrados = this.docente.filter(a =>
+      a.nombrre.toLowerCase().includes(this.busquedaAutorizada.toLowerCase()) ||
+      a.apellidos?.toLowerCase().includes(this.busquedaAutorizada.toLowerCase())
+    );
+  }
+
+  seleccionarSalon(salon: any) {
+    this.busquedaSalon = `${salon.numero} || ''}`.trim();
+    this.nuevoAlumno.salon = [salon.documentId]; // Asigna el ID del docente
+    this.mostrarListaSalon = false; // Oculta la lista
+  }
+
+  seleccionarAutorizada(Autorizada: any) {
+    this.busquedaAutorizada = `${Autorizada.numero} ${Autorizada.apellidos} || ''}`.trim();
+    this.nuevoAlumno.Autorizadas = [Autorizada.documentId]; // Asigna el ID del docente
+    this.mostrarListaAutorizada = false; // Oculta la lista
   }
 
   openAddModal() {
@@ -219,18 +261,18 @@ export class AlumnosPage implements OnInit {
     });
   }
 
-getAllAlumnos() {
-  this.api.getAllAlum(this.token).then((res: any[]) => { 
-    this.allAlumnos = res.sort((a: any, b: any) => { 
-      if (a.Estatus === b.Estatus) return 0;
-      if (a.Estatus === true) return -1;
-      return 1;
+  getAllAlumnos() {
+    this.api.getAllAlum(this.token).then((res: any[]) => {
+      this.allAlumnos = res.sort((a: any, b: any) => {
+        if (a.Estatus === b.Estatus) return 0;
+        if (a.Estatus === true) return -1;
+        return 1;
+      });
+      console.log('estos son todos los alumnos', this.allAlumnos)
+    }).catch((error) => {
+      console.log(error);
     });
-    console.log('estos son todos los alumnos', this.allAlumnos)
-  }).catch((error) => {
-    console.log(error);
-  });
-}
+  }
 
 
 
@@ -329,45 +371,45 @@ getAllAlumnos() {
 
 
   async updateAlum() {
-  if (!this.alumnoEditId) return;
+    if (!this.alumnoEditId) return;
 
-  try {
-    if (this.nuevoAlumno.salon && this.nuevoAlumno.salon.documentId !== this.alumnos) {
-      const salonResponse = await this.api.getSalonbyid(this.nuevoAlumno.salon.id, this.token);
-      const docenteId = salonResponse.data.data.attributes.docente?.data?.id;
-      
-      // 3. Actualizar referencia al docente
-      this.nuevoAlumno.docente = docenteId ? { id: docenteId } : null;
+    try {
+      if (this.nuevoAlumno.salon && this.nuevoAlumno.salon.documentId !== this.alumnos) {
+        const salonResponse = await this.api.getSalonbyid(this.nuevoAlumno.salon.id, this.token);
+        const docenteId = salonResponse.data.data.attributes.docente?.data?.id;
+
+        // 3. Actualizar referencia al docente
+        this.nuevoAlumno.docente = docenteId ? { id: docenteId } : null;
+      }
+
+      // 4. Preparar datos para actualización
+      const updateData = {
+        nombre: this.nuevoAlumno.nombre,
+        apellido: this.nuevoAlumno.apellido,
+        Estatus: this.nuevoAlumno.Estatus,
+        persona_autorizadas: this.nuevoAlumno.autorizadas,
+        docente: this.nuevoAlumno.docente,
+        salon: this.nuevoAlumno.salon
+      };
+
+      // 5. Actualizar alumno (usando el servicio)
+      await this.api.putAlum(this.alumnoEditId, updateData, this.token);
+
+      // Resto de tu lógica para foto...
+      if (this.nuevoAlumno.foto) {
+        const uploadRes = await this.api.uploadFile(this.token, this.nuevoAlumno.foto);
+        await this.api.imagenAlum(this.token, this.alumnoEditId, uploadRes.data[0].id);
+      }
+
+      this.modal.dismiss();
+      this.limpiarFormulario();
+      this.getAlumnos(undefined, true);
+
+    } catch (error) {
+      console.error(error);
+      this.presentAlert('Error al actualizar alumno');
     }
-
-    // 4. Preparar datos para actualización
-    const updateData = {
-      nombre: this.nuevoAlumno.nombre,
-      apellido: this.nuevoAlumno.apellido,
-      Estatus: this.nuevoAlumno.Estatus,
-      persona_autorizadas: this.nuevoAlumno.autorizadas,
-      docente: this.nuevoAlumno.docente,
-      salon: this.nuevoAlumno.salon
-    };
-
-    // 5. Actualizar alumno (usando el servicio)
-    await this.api.putAlum(this.alumnoEditId, updateData, this.token);
-
-    // Resto de tu lógica para foto...
-    if (this.nuevoAlumno.foto) {
-      const uploadRes = await this.api.uploadFile(this.token, this.nuevoAlumno.foto);
-      await this.api.imagenAlum(this.token, this.alumnoEditId, uploadRes.data[0].id);
-    }
-
-    this.modal.dismiss();
-    this.limpiarFormulario();
-    this.getAlumnos(undefined, true);
-
-  } catch (error) {
-    console.error(error);
-    this.presentAlert('Error al actualizar alumno');
   }
-}
 
   async addAlum(nuevoAlumnoParam?: any) {
     const alumno = nuevoAlumnoParam ?? this.nuevoAlumno;

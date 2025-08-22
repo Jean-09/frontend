@@ -23,7 +23,7 @@ ion-row {
 }
 
 ion-modal {
-  --height: 71%;
+  --height: 57.4%;
   --border-radius: 16px;
   --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
@@ -414,6 +414,102 @@ ion-item{
   color: #000000;
   background: #fafafa;
 }
+
+/* Contenedor principal del dropdown */
+.dropdown-container {
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+  top: 100%;
+ 
+}
+
+
+/* Lista con barra fija */
+.dropdown-list-fixed {
+  background: white;
+  border-radius: 8px 8px 8px 8px;
+  box-shadow: 0 4px 16px rgba(105, 95, 95, 0.12);
+  max-height: 145px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;  
+}
+
+/* Barra de búsqueda fija */
+.sticky-searchbar {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  padding: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Contenido scrollable */
+.scrollable-content {
+  overflow-y: auto;
+  max-height: 250px;
+
+    /* Chrome/Edge/Safari */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+    margin: 5px 0;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a8a8;
+  }
+}
+
+/* Estilos para texto negro */
+.black-searchbar {
+  --background: white !important;
+  --color: black !important;
+  --placeholder-color: #666 !important;
+  --icon-color: rgb(0, 0, 0) !important;
+  --border-radius: 8px;
+}
+
+.black-item {
+  --background: white !important;
+  --color: rgba(0, 0, 0, 0.164) !important;
+  --padding-start: 16px;
+  --min-height: 48px;
+  border-bottom: 1px solid #f0f0f0;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    --background: #f8f9fa !important;
+  }
+
+  
+}
+
+/* Estilo para el ícono */
+ion-icon[name="chevron-down-outline"] {
+  color: black;
+  transition: transform 0.3s ease;
+  
+  &[aria-expanded="true"] {
+    transform: rotate(180deg);
+  }
+}
+
 
 .scroll-container {
   height: calc(90% - 50px);

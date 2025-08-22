@@ -21,10 +21,16 @@ export class AutorizadasPage implements OnInit {
   autorizadaEditId: string | null = null;
 
   paginaActual = 1;
-  porPagina = 20;
+  porPagina = 10;
   cargando = false;
   infiniteScrollEvent: any = null;
   previewImage: string | ArrayBuffer | null = null;
+
+   shouldShowLoadMore(): boolean {
+    return this.hayMasAutorizada &&
+      !this.searchTerm?.trim() &&
+      this.autorizadas.length > 0;
+  }
 
   constructor(private alertController: AlertController, private api: ApiService, private storage: Storage, private route: Router) { }
 
@@ -32,6 +38,7 @@ export class AutorizadasPage implements OnInit {
     await this.storage.create();
     await this.getToken();
     await this.getAutorizadas();
+    await this.getAllAutorizadas()
 
   }
 
@@ -58,6 +65,7 @@ export class AutorizadasPage implements OnInit {
       nombre: autorizada.nombre,
       apellido: autorizada.apellidos,
       Estatus: autorizada.Estatus,
+      email: autorizada.email,
       foto: null,
       telefono: autorizada.telefono,
       direccion: autorizada.Domicilio,
@@ -88,24 +96,26 @@ export class AutorizadasPage implements OnInit {
   searchTerm: string = '';
 
   filterAutorizadas() {
-  if (!this.searchTerm) {
-    return this.autorizadas;
+    if (!this.searchTerm) {
+      return this.autorizadas;
+    }
+
+    const terms = this.searchTerm.toLowerCase().split(' ').filter(t => t);
+
+    return this.allAutorizada.filter(a => {
+      const nombre = a.nombre?.toLowerCase() || '';
+      const apellidos = a.apellidos?.toLowerCase() || '';
+      const fullName = `${nombre} ${apellidos}`;
+
+      return terms.every(term =>
+        nombre.includes(term) ||
+        apellidos.includes(term) ||
+        fullName.includes(term)
+      );
+    });
   }
 
-  const terms = this.searchTerm.toLowerCase().split(' ').filter(t => t);
-
-  return this.autorizadas.filter(a => {
-    const nombre = a.nombre?.toLowerCase() || '';
-    const apellidos = a.apellidos?.toLowerCase() || '';
-    const fullName = `${nombre} ${apellidos}`;
-
-    return terms.every(term => 
-      nombre.includes(term) || 
-      apellidos.includes(term) ||
-      fullName.includes(term)
-    );
-  });
-}
+  hayMasAutorizada: boolean = true;
 
   getAutorizadas(event?: any, reset: boolean = false) {
     if (this.cargando) {
@@ -116,9 +126,12 @@ export class AutorizadasPage implements OnInit {
     if (reset) {
       this.paginaActual = 1;
       this.autorizadas = [];
+      this.hayMasAutorizada = true;
     }
 
     this.cargando = true;
+
+
 
     this.api.getAut(this.token, this.paginaActual, this.porPagina).then((res) => {
       if (event) this.infiniteScrollEvent = event;
@@ -129,12 +142,19 @@ export class AutorizadasPage implements OnInit {
         if (a.estatus === b.estatus) return 0;
         if (a.estatus === true) return -1;
         return 1;
+
       });
 
       if (event) {
         event.target.complete();
         if (res.length < this.porPagina) {
           event.target.disabled = true;
+          this.hayMasAutorizada = false;
+        }
+      } else {
+        // Manejo para el botón
+        if (res.length < this.porPagina) {
+          this.hayMasAutorizada = false;
         }
       }
 
@@ -148,6 +168,22 @@ export class AutorizadasPage implements OnInit {
       this.cargando = false;
     });
   }
+
+    allAutorizada:any[]=[];
+  
+  getAllAutorizadas(){
+     this.api.getAllAut(this.token).then((res: any[]) => {
+      this.allAutorizada = res.sort((a: any, b: any) => {
+        if (a.Estatus === b.Estatus) return 0;
+        if (a.Estatus === true) return -1;
+        return 1;
+      });
+      console.log('estos son todos los salones', this.allAutorizada)
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
 
   toggleStatus(a: any) {
     const nuevoEstado = !a.estatus;
@@ -200,14 +236,45 @@ export class AutorizadasPage implements OnInit {
         return;
       }
 
+      let userDocumentId: string | undefined;
+
+      // Registro del usuario
+      try {
+        const user = {
+          username: autorizada.nombre,
+          email: autorizada.email,
+          password: autorizada.email.split('@')[0] // Usamos el nombre como contraseña temporal
+        };
+
+        const userCreateRes = await this.api.postUserAutorizado(user, this.token);
+        userDocumentId = userCreateRes.user?.documentId || userCreateRes.user.documentId;
+        console.log('la supuesta id ', userDocumentId)
+
+        if (!userDocumentId) {
+          console.error('No se pudo obtener el documentId del usuario:', userCreateRes.data);
+          await this.presentAlert('Error al registrar el usuario. No se obtuvo el ID de documento.');
+          return;
+        }
+
+        console.log('Usuario creado con documentId:', userDocumentId);
+
+      } catch (userError) {
+        console.error('Error al crear el usuario:', userError);
+        await this.presentAlert('Error al registrar el usuario del docente. Por favor verifique los datos e intente nuevamente.');
+        return;
+      }
+
       const data = {
         nombre: autorizada.nombre,
         apellidos: autorizada.apellido,
         telefono: autorizada.telefono,
         Domicilio: autorizada.direccion,
+        email: autorizada.email,
         estatus: autorizada.estatus,
-        user: autorizada.nombre,
+        user: userDocumentId,
       };
+
+      
 
       const createRes = await this.api.postAut(data, this.token);
       const docenteId = createRes.data.data.documentId;
@@ -261,6 +328,7 @@ export class AutorizadasPage implements OnInit {
       nombre: '',
       apellido: '',
       telefono: '',
+      email: '',
       direccion: '',
       estatus: true,
       foto: null
@@ -273,6 +341,7 @@ export class AutorizadasPage implements OnInit {
     nombre: '',
     apellido: '',
     telefono: '',
+    email: '',
     direccion: '',
     estatus: true,
     foto: null

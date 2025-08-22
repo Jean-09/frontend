@@ -66,7 +66,7 @@ export class DocentePage implements OnInit {
   docentes: any[] = [];
   token = '';
   paginaActual = 1;
-  porPagina = 20;
+  porPagina = 510;
   cargando = false;
   infiniteScrollEvent: any = null;
   previewImage: string | ArrayBuffer | null = null;
@@ -101,6 +101,8 @@ export class DocentePage implements OnInit {
   });
 }
 
+hayMasDocentes: boolean = true;
+
   getDocentes(event?: any, reset: boolean = false) {
     if (this.cargando) {
       if (event) event.target.complete();
@@ -110,6 +112,7 @@ export class DocentePage implements OnInit {
     if (reset) {
       this.paginaActual = 1;
       this.docentes = [];
+      this.hayMasDocentes = true
     }
 
     this.cargando = true;
@@ -129,6 +132,12 @@ export class DocentePage implements OnInit {
         event.target.complete();
         if (res.length < this.porPagina) {
           event.target.disabled = true;
+          this.hayMasDocentes = false
+        }
+      }else {
+        // Manejo para el botón
+        if (res.length < this.porPagina) {
+          this.hayMasDocentes = false;
         }
       }
 
@@ -140,6 +149,21 @@ export class DocentePage implements OnInit {
       console.log(error);
       if (event) event.target.complete();
       this.cargando = false;
+    });
+  }
+
+      allDocente:any[]=[];
+  
+  getAllAutorizadas(){
+     this.api.getAllDoce(this.token).then((res: any[]) => {
+      this.allDocente = res.sort((a: any, b: any) => {
+        if (a.Estatus === b.Estatus) return 0;
+        if (a.Estatus === true) return -1;
+        return 1;
+      });
+      console.log('estos son todos los salones', this.allDocente)
+    }).catch((error) => {
+      console.log(error);
     });
   }
 
@@ -199,7 +223,6 @@ async addDoce(nuevoDocenteParam?: any) {
   const docente = nuevoDocenteParam ?? this.nuevoDocente;
 
   try {
-    // Validación de campos obligatorios
     if (!docente.nombre || !docente.apellido || !docente.estatus || !docente.gmail) {
       await this.presentAlert('Por favor, complete todos los datos obligatorios.');
       return;
@@ -207,12 +230,11 @@ async addDoce(nuevoDocenteParam?: any) {
 
     let userDocumentId: string | undefined;
 
-    // Registro del usuario
     try {
       const user = {
         username: docente.nombre,
         email: docente.gmail,
-        password: docente.nombre // Usamos el nombre como contraseña temporal
+        password: docente.gmail.split('@')[0]
       };
       
       const userCreateRes = await this.api.postUser(user, this.token);
@@ -232,18 +254,17 @@ async addDoce(nuevoDocenteParam?: any) {
       return;
     }
 
-    // Creación del registro del docente
     const data = {
       nombre: docente.nombre,
       apellido: docente.apellido,
       estatus: docente.estatus,
       user: userDocumentId,
+      email: docente.gmail
     };
 
     const createRes = await this.api.postDoce(data, this.token);
     const docenteId = createRes.data.data.documentId;
 
-    // Manejo de la foto si existe
     if (docente.foto) {
       try {
         const uploadRes = await this.api.uploadFileDoce(this.token, docente.foto);
@@ -257,13 +278,11 @@ async addDoce(nuevoDocenteParam?: any) {
       await this.presentAlert('Advertencia: No se ha subido ninguna foto para el docente.');
     }
 
-    // Limpieza y cierre
     this.mostrarFormulario = false;
     this.limpiarFormulario();
     this.modal.dismiss();
     await this.getDocentes(undefined, true);
 
-    // Mensaje de éxito
     if (!nuevoDocenteParam) {
       await this.presentAlert('Docente registrado exitosamente. Las credenciales han sido enviadas al correo proporcionado.');
     }

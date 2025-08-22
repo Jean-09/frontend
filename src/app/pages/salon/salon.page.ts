@@ -30,6 +30,7 @@ export class SalonPage implements OnInit {
     await this.storage.create();
     await this.getToken();
     await this.getSalon();
+    await this.getAllSalones()
     await this.getdocentes();
     await this.getAlumnos();
 
@@ -70,8 +71,8 @@ export class SalonPage implements OnInit {
 
   salon: any[] = [];
   token = '';
-  paginaActual = 1;
-  porPagina = 20;
+  paginaActual = 10;
+  porPagina = 1;
   cargando = false;
   infiniteScrollEvent: any = null;
   previewImage: string | ArrayBuffer | null = null;
@@ -143,7 +144,7 @@ export class SalonPage implements OnInit {
   }
 
   
-
+  hayMasSalones: boolean = true;
   getSalon(event?: any, reset: boolean = false) {
     if (this.cargando) {
       if (event) event.target.complete();
@@ -153,6 +154,7 @@ export class SalonPage implements OnInit {
     if (reset) {
       this.paginaActual = 1;
       this.salon = [];
+      this.hayMasSalones = true; // Añade esta variable para controlar si hay más alumnos
     }
 
     this.cargando = true;
@@ -172,6 +174,12 @@ export class SalonPage implements OnInit {
         event.target.complete();
         if (res.length < this.porPagina) {
           event.target.disabled = true;
+           this.hayMasSalones = false;
+        }
+      }else {
+        // Manejo para el botón
+        if (res.length < this.porPagina) {
+          this.hayMasSalones = false;
         }
       }
 
@@ -183,6 +191,21 @@ export class SalonPage implements OnInit {
       console.log(error);
       if (event) event.target.complete();
       this.cargando = false;
+    });
+  }
+
+  allSalones:any[]=[];
+  
+  getAllSalones(){
+     this.api.getAllSalon(this.token).then((res: any[]) => {
+      this.allSalones = res.sort((a: any, b: any) => {
+        if (a.Estatus === b.Estatus) return 0;
+        if (a.Estatus === true) return -1;
+        return 1;
+      });
+      console.log('estos son todos los salones', this.allSalones)
+    }).catch((error) => {
+      console.log(error);
     });
   }
 
@@ -220,7 +243,7 @@ filterSalones() {
   }
 
   const term = this.searchTerm.toLowerCase();
-  return this.salon.filter(s => 
+  return this.allSalones.filter(s => 
     s.Numero.toLowerCase().includes(term) || 
     (s.docente && s.docente.nombre.toLowerCase().includes(term)))
 }

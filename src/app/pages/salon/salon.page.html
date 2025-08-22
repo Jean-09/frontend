@@ -115,7 +115,7 @@
                     <!-- Barra de búsqueda fija -->
                     <div class="sticky-searchbar">
                       <ion-searchbar [(ngModel)]="busquedaDocente" (ionInput)="filtrarDocentes()"
-                        placeholder="Buscar docente..." debounce="300" class="black-searchbarblack-searchbar">
+                        placeholder="Buscar docente..." debounce="300" class="black-searchbar">
                       </ion-searchbar>
                     </div>
 
@@ -273,10 +273,15 @@
               </ion-col>
             </ion-row>
 
-            <ion-infinite-scroll threshold="100px" (ionInfinite)="getSalon($event)">
-              <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más alumnos...">
-              </ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+            <ion-row *ngIf="!searchTerm && hayMasSalones" class="load-more-row">
+              <ion-col size="12">
+                <ion-button expand="block" (click)="getSalon()" fill="outline" class="custom-load-button"
+                  [disabled]="cargando">
+                  <span *ngIf="!cargando">Cargar más alumnos</span>
+                  <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+                </ion-button>
+              </ion-col>
+            </ion-row>
           </div>
         </ion-grid>
       </ion-card-content>

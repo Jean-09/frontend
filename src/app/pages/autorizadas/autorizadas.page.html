@@ -107,8 +107,8 @@
                   </label>
                 </div>
 
-                <div class="imagenes-container" *ngIf="previewImage">
-                  <img [src]="previewImage" alt="Previsualización" class="imagen-miniatura" />
+                <div class="photo-preview" *ngIf="previewImage">
+                  <img [src]="previewImage" alt="Previsualización" class="preview-image" />
                 </div>
               </div>
 
@@ -132,6 +132,12 @@
                   <ion-select-option [value]="true">Activo</ion-select-option>
                   <ion-select-option [value]="false">Inactivo</ion-select-option>
                 </ion-select>
+              </ion-item>
+
+              <ion-item class="form-item">
+                <ion-label position="floating" class="form-label">Correo electronico</ion-label>
+                <ion-input type="email" class="form-input" [(ngModel)]="nuevoAutorizado.email"
+                  placeholder="Email"></ion-input>
               </ion-item>
 
               <!-- <div class="row">
@@ -184,7 +190,8 @@
 
       <ion-card-content class="card-content">
         <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterAutorizadas()"
-          placeholder="Buscar por número o docente" debounce="300" class="custom-searchbar" style="--background: white; --color:black; --border-radius: 10px;">
+          placeholder="Buscar por número o docente" debounce="300" class="custom-searchbar"
+          style="--background: white; --color:black; --border-radius: 10px;">
         </ion-searchbar>
         <ion-grid class="student-grid">
           <!-- Encabezados -->
@@ -231,10 +238,15 @@
               </ion-col>
             </ion-row>
 
-            <ion-infinite-scroll threshold="100px" (ionInfinite)="getAutorizadas($event)">
-              <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más alumnos...">
-              </ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+            <ion-row *ngIf="!searchTerm && hayMasAutorizada" class="load-more-row">
+              <ion-col size="12">
+                <ion-button expand="block" (click)="getAutorizadas()" fill="outline" class="custom-load-button"
+                  [disabled]="cargando">
+                  <span *ngIf="!cargando">Cargar más personas autorizadas</span>
+                  <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+                </ion-button>
+              </ion-col>
+            </ion-row>
           </div>
         </ion-grid>
       </ion-card-content>

@@ -397,69 +397,64 @@
       </ion-card-header>
 
       <ion-card-content class="card-content">
-  <ion-searchbar 
-    [(ngModel)]="searchTerm" 
-    (ionInput)="filterAlumno()" 
-    placeholder="Buscar por nombre o apellido"
-    debounce="300" 
-    class="custom-searchbar" 
-    style="--background: white; --color:black; --border-radius: 10px;">
-  </ion-searchbar>
+        <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterAlumno()" placeholder="Buscar por nombre o apellido"
+          debounce="300" class="custom-searchbar" style="--background: white; --color:black; --border-radius: 10px;">
+        </ion-searchbar>
 
-  <ion-grid class="student-grid">
-    <!-- Encabezados -->
-    <ion-row class="header-row">
-      <ion-col size="2">Foto</ion-col>
-      <ion-col size="2.5">Nombre</ion-col>
-      <ion-col size="2.5">Apellido</ion-col>
-      <ion-col size="2.5">Estado</ion-col>
-      <ion-col size="2">Editar</ion-col>
-    </ion-row>
+        <ion-grid class="student-grid">
+          <!-- Encabezados -->
+          <ion-row class="header-row">
+            <ion-col size="2">Foto</ion-col>
+            <ion-col size="2.5">Nombre</ion-col>
+            <ion-col size="2.5">Apellido</ion-col>
+            <ion-col size="2.5">Estado</ion-col>
+            <ion-col size="2">Editar</ion-col>
+          </ion-row>
 
-    <!-- Contenedor con scroll -->
-    <div id="scroll-container" class="scroll-container">
-      <!-- Estudiantes - Usa allAlumnos cuando hay búsqueda, alumnos cuando no -->
-      <ion-row *ngFor="let a of (searchTerm ? filterAlumno() : alumnos)" class="data-row">
-        <ion-col size="2" (click)="verDetallesAlum(a)">
-          <ion-avatar *ngIf="a.foto && a.foto[0]?.url" class="avatar-pequeno">
-            <img [src]="'http://localhost:1337' + a.foto[0].url" alt="Foto de perfil">
-          </ion-avatar>
-          <ion-text *ngIf="!a.foto || !a.foto[0]?.url">
-            <p>No foto</p>
-          </ion-text>
-        </ion-col>
+          <!-- Contenedor con scroll -->
+          <div id="scroll-container" class="scroll-container">
+            <!-- Estudiantes - Usa allAlumnos cuando hay búsqueda, alumnos cuando no -->
+            <ion-row *ngFor="let a of (searchTerm ? filterAlumno() : alumnos)" class="data-row">
+              <ion-col size="2" (click)="verDetallesAlum(a)">
+                <ion-avatar *ngIf="a.foto && a.foto[0]?.url" class="avatar-pequeno">
+                  <img [src]="'http://localhost:1337' + a.foto[0].url" alt="Foto de perfil">
+                </ion-avatar>
+                <ion-text *ngIf="!a.foto || !a.foto[0]?.url">
+                  <p>No foto</p>
+                </ion-text>
+              </ion-col>
 
-        <ion-col size="2.5" (click)="verDetallesAlum(a)">{{a.nombre | titlecase}}</ion-col>
-        <ion-col size="2.5" (click)="verDetallesAlum(a)">{{a.apellido | titlecase}}</ion-col>
+              <ion-col size="2.5" (click)="verDetallesAlum(a)">{{a.nombre | titlecase}}</ion-col>
+              <ion-col size="2.5" (click)="verDetallesAlum(a)">{{a.apellido | titlecase}}</ion-col>
 
-        <!-- Estado clickeable -->
-        <ion-col size="2.5" (click)="toggleStatus(a);">
-          <ion-badge class="status-badge" [color]="a.Estatus ? 'success' : 'danger'">
-            {{ a.Estatus ? 'Activo' : 'Inactivo' }}
-          </ion-badge>
-        </ion-col>
+              <!-- Estado clickeable -->
+              <ion-col size="2.5" (click)="toggleStatus(a);">
+                <ion-badge class="status-badge" [color]="a.Estatus ? 'success' : 'danger'">
+                  {{ a.Estatus ? 'Activo' : 'Inactivo' }}
+                </ion-badge>
+              </ion-col>
 
-        <!-- Botón de editar -->
-        <ion-col size="2" (click)="openEditModal(a); $event.stopPropagation()">
-          <ion-button fill="outline" class="edit-button">
-            Editar
-          </ion-button>
-        </ion-col>
-      </ion-row>
+              <!-- Botón de editar -->
+              <ion-col size="2" (click)="openEditModal(a); $event.stopPropagation()">
+                <ion-button fill="outline" class="edit-button">
+                  Editar
+                </ion-button>
+              </ion-col>
+            </ion-row>
 
-      <!-- Botón de cargar más (solo visible sin búsqueda) -->
-      <ion-row *ngIf="!searchTerm && hayMasAlumnos" class="load-more-row">
-        <ion-col size="12">
-          <ion-button expand="block" (click)="getAlumnos()" fill="outline" class="custom-load-button"
-            [disabled]="cargando">
-            <span *ngIf="!cargando">Cargar más alumnos</span>
-            <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </div>
-  </ion-grid>
-</ion-card-content>
+            <!-- Botón de cargar más (solo visible sin búsqueda) -->
+            <ion-row *ngIf="!searchTerm && hayMasAlumnos" class="load-more-row">
+              <ion-col size="12">
+                <ion-button expand="block" (click)="getAlumnos()" fill="outline" class="custom-load-button"
+                  [disabled]="cargando">
+                  <span *ngIf="!cargando">Cargar más alumnos</span>
+                  <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </div>
+        </ion-grid>
+      </ion-card-content>
     </ion-card>
   </div>
 </ion-content>

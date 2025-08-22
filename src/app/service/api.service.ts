@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular'
 import axios, { AxiosHeaders } from 'axios';
 import { environment } from 'src/environments/environment.prod';
-import { EmailComposer } from '@awesome-cordova-plugins/email-composer/ngx';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class ApiService {
 
   private url = environment.urlapi;
@@ -22,6 +21,69 @@ export class ApiService {
       'Authorization': 'Bearer ' + token
     });
     return axios.post(this.url + '/auth/local/register', { username: user.username, email: user.email, password: user.password }, { headers: options });
+  }
+async postUserAutorizado(user: any, token: string) {
+    console.log('Usuario a registrar', user);
+    
+    const options = {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    try {
+      // 1. Registrar el usuario
+      console.log('Creando usuario...');
+      const registerResponse = await axios.post(
+        `${this.url}/auth/local/register`, 
+        {
+          username: user.username,
+          email: user.email,
+          password: user.password
+        }, 
+        options
+      );
+
+      const newUser = registerResponse.data.user;
+      console.log('Usuario creado con ID:', newUser.id);
+
+      // 2. Buscar el rol "Persona Autorizada"
+      console.log('Buscando rol "Persona Autorizada"...');
+      const rolesResponse = await axios.get(
+        `${this.url}/users-permissions/roles`,
+        options
+      );
+
+      const roles = rolesResponse.data.roles;
+      const personaAutorizadaRole = roles.find((role: any) => 
+        role.name.toLowerCase() === 'persona_autorizada'
+      );
+
+      if (!personaAutorizadaRole) {
+        throw new Error('Rol "Persona Autorizada" no encontrado');
+      }
+
+      console.log('ID del rol encontrado:', personaAutorizadaRole.id);
+
+      // 3. Actualizar el usuario con el rol
+      console.log('Actualizando usuario con el rol...');
+      const updateResponse = await axios.put(
+        `${this.url}/users/${newUser.id}`,
+        {
+          role: personaAutorizadaRole.id
+        },
+        options
+      );
+       console.log('datos que regresan',registerResponse.data)
+
+      console.log('Usuario actualizado exitosamente');
+      return registerResponse.data;
+     
+
+    } catch (error) {
+      console.error('Error en el proceso completo:', error);
+      throw error; // Puedes manejar este error según tus necesidades
+    }
   }
 
 
@@ -141,6 +203,26 @@ async putAlum(id: string, data: any, token: string) {
     const url = `${this.url}/docentes?populate[foto]=true&populate[alumnos][populate][0]=foto&populate[user][populate]=*&populate[salon][populate]=*&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
+  }  
+
+  
+  async getAllDoce(token: string) {
+    console.log(token);
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    const res = await axios.get(this.url +'/docentes?populate[foto]=true&populate[alumnos][populate][0]=foto&populate[user][populate]=*&populate[salon][populate]=*', { headers: options });
+    return res.data.data;
+  }
+  async getAllLlegadas(token: string) {
+    console.log(token);
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    const res = await axios.get(this.url +'/llegadas?populate[alumno][populate][0]=foto&populate[docente][populate][0]=foto&populate[persona_autorizada][populate][0]=foto', { headers: options });
+    return res.data.data;
   }
 
   async postDoce(data: any, token: string) {
@@ -200,7 +282,7 @@ async putAlum(id: string, data: any, token: string) {
 
 
   // CRUD de personas autorizadas
-  async getAut(token: string, pagina: number = 1, porPagina: number = 20) {
+  async getAut(token: string, pagina: number = 1, porPagina: number = 5) {
     console.log(token);
     let options = new AxiosHeaders({
       'Authorization': 'Bearer ' + token
@@ -210,6 +292,16 @@ async putAlum(id: string, data: any, token: string) {
     const url = `${this.url}/persona-autorizadas?populate[foto]=true&populate[alumnos][populate][0]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
     return res.data.data;
+  }  
+
+  async getAllAut(token: string) {
+    console.log(token);
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    const res = await axios.get(this.url +'/persona-autorizadas?populate[foto]=true&populate[alumnos][populate][0]=foto', { headers: options })
+    return res.data.data
   }
 
   async postAut(data: any, token: string) {
@@ -271,6 +363,15 @@ async putAlum(id: string, data: any, token: string) {
     const start = (pagina - 1) * porPagina;
     const url = `${this.url}/salons?populate[alumnos][populate][0]=foto&populate[docente][populate][0]=foto&pagination[limit]=${porPagina}&pagination[start]=${start}`;
     const res = await axios.get(url, { headers: options });
+    return res.data.data;
+  }  
+  async getAllSalon(token: string) {
+    console.log(token);
+    let options = new AxiosHeaders({
+      'Authorization': 'Bearer ' + token
+    });
+
+    const res = await axios.get(this.url+'/salons?populate[alumnos][populate][0]=foto&populate[docente][populate][0]=foto', { headers: options });
     return res.data.data;
   }
 

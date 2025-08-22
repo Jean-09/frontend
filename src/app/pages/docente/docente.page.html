@@ -201,10 +201,15 @@
               </ion-col>
             </ion-row>
 
-            <ion-infinite-scroll threshold="100px" (ionInfinite)="getDocentes($event)">
-              <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más alumnos...">
-              </ion-infinite-scroll-content>
-            </ion-infinite-scroll>
+                  <ion-row *ngIf="!searchTerm && hayMasDocentes" class="load-more-row">
+        <ion-col size="12">
+          <ion-button expand="block" (click)="getDocentes()" fill="outline" class="custom-load-button"
+            [disabled]="cargando">
+            <span *ngIf="!cargando">Cargar más alumnos</span>
+            <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+          </ion-button>
+        </ion-col>
+      </ion-row>
           </div>
         </ion-grid>
       </ion-card-content>
